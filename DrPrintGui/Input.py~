@@ -1,0 +1,11 @@
+## This library provides User Input fields
+
+import gtk, pygtk
+
+class UserNameField(gtk.Entry):
+    
+    def __init__(self, parent=None):
+        
+        gtk.Entry.__init__(self, parent)
+
+        self.set_text( "Utente" )
