@@ -2,10 +2,13 @@
 
 import gtk, pygtk
 from DrPrintGui.MainWin import MainWin
+from DrPrintBackend import Backend
 
 if __name__ == "__main__":
+
+   backend = Backend()
    
-   mw = MainWin()
+   mw = MainWin(backend)
 
    mw.show()
 

@@ -11,9 +11,6 @@ class UsernameField(gtk.Entry):
         self.set_text( "Utente" )
 
 
-
-
-
 class PasswordField(gtk.Entry):
     
     def __init__(self, parent=None):
@@ -79,3 +76,20 @@ class PrinterComboBox(gtk.HBox):
     def get_printer(self):
         return self.combobox.get_active_text()
 
+
+class PagePerPageComboBox(gtk.HBox):
+    
+    def __init__(self):
+        gtk.HBox.__init__(self)
+        self.combobox = gtk.combo_box_new_text()
+        self.combobox.append_text("1")
+        self.combobox.append_text("2")
+        self.combobox.append_text("4")
+
+        self.combobox.set_active(0)
+
+        self.pack_start( self.combobox )
+        self.combobox.show()
+
+    def get_page_per_page(self):
+        return self.combobox.get_active_text()

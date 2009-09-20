@@ -8,14 +8,15 @@ __author__ = 'Leonardo Robol <leo@robol.it>'
 
 import gtk, pygtk
 
-from Input import UsernameField, PasswordField, PrintButton, SelectFileWidget, PrinterComboBox
+from Input import UsernameField, PasswordField, PrintButton, SelectFileWidget, PrinterComboBox, PagePerPageComboBox
 
-import paramiko
 
 class MainWin(gtk.Window):
     """MainWin object for DrPrint"""
 
-    def __init__(self, parent=None):
+    def __init__(self, backend=None):
+
+        self.backend = backend
         
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
@@ -35,46 +36,84 @@ class MainWin(gtk.Window):
         from DrPrintGui"""
 
         # The main LayOut VBox
-        layout_box = gtk.VBox()
-        layout_box.set_spacing( self.default_spacing )
+        layout_box = gtk.Table(rows=9,columns=4)
+
+        # Qualche istruzinoe preliminare
+        label = gtk.Label()
+        label.set_markup("<b>Come usare questo programma:</b>\n\
+1) Inserire nome utente e password - 2) Scegliere il file da stampare e la\
+ stampante - 3) Premere il tasto stampa")
+
+        layout_box.attach(label, 0, 7, 0, 1)
+        label.show()
         
-        # The authentication Input
-        authentication_box = gtk.HBox()
-        authentication_box.set_spacing( self.default_spacing )
+        # The authentication Input (riga 1)
+        for j in range(0, 8):
+            layout_box.set_row_spacing( j , self.default_spacing )
+
+        for j in range(0,2):
+            layout_box.set_col_spacing( j , self.default_spacing )
+
+        ## Un po' di spazio fra la spiegazione e la sostanza
+        layout_box.set_row_spacing(0, 20)
+
+        layout_box.set_homogeneous(False)
+
+        label = gtk.Label()
+        label.set_markup("<b>Autenticazione</b>")
+        layout_box.attach( label, 0, 2, 1, 2 )
+        label.show()
+
+        label = gtk.Label("Utente")
+        layout_box.attach( label, 0 , 1, 2 , 3)
+        label.show()
 
         self.user_field = UsernameField()
-        authentication_box.pack_start(self.user_field, 1)
+        layout_box.attach( self.user_field, 1, 3, 2 , 3)
         self.user_field.show()
 
+        label = gtk.Label("Password")
+        layout_box.attach( label, 0, 1, 3, 4)
+        label.show()
+
         self.password_field = PasswordField()
-        authentication_box.pack_start(self.password_field, 1)
+        layout_box.attach(self.password_field, 1, 3, 3, 4)
         self.password_field.show()
 
-        self.print_button = PrintButton()
-        authentication_box.pack_start(self.print_button, 1)
-        self.print_button.show()
-
-        layout_box.pack_start ( authentication_box )
-        authentication_box.show()
-
+       
         # The PDF file loading and print settings
-        file_chooser_box = gtk.HBox()
-        file_chooser_box.set_spacing ( self.default_spacing )
-        
-        self.select_file_widget = SelectFileWidget()
-        file_chooser_box.pack_start( self.select_file_widget )
-        self.select_file_widget.show()
+        label = gtk.Label()
+        label.set_markup("<b>Configurazione stampante</b>")
+        layout_box.attach(label, 0, 2, 4, 5)
+        label.show()
+
+        label = gtk.Label("Stampante")
+        layout_box.attach(label, 0, 1, 5, 6)
+        label.show()
 
         self.printer_chooser = PrinterComboBox()
-        file_chooser_box.pack_start(self.printer_chooser)
+        layout_box.attach( self.printer_chooser, 1, 3, 5, 6)
         self.printer_chooser.show()
-        
-        layout_box.pack_start (file_chooser_box)
 
-       
-        file_chooser_box.show()
+        label = gtk.Label("File")
+        layout_box.attach(label, 0, 1, 7, 8)
+        label.show()
 
+        self.select_file_widget = SelectFileWidget()
+        layout_box.attach( self.select_file_widget, 1, 3, 7, 8)
+        self.select_file_widget.show()
+
+        self.print_button = PrintButton()
+        layout_box.attach(self.print_button, 2, 3, 8, 9)
+        self.print_button.show()
+
+        label = gtk.Label("Pagine per foglio")
+        layout_box.attach(label, 0, 1, 6, 7)
+        label.show()
         
+        self.page_per_page = PagePerPageComboBox()
+        layout_box.attach(self.page_per_page, 1, 3, 6, 7)
+        self.page_per_page.show()
 
         self.add (layout_box)
         layout_box.show()
@@ -84,35 +123,23 @@ class MainWin(gtk.Window):
         self.print_button.connect('clicked', self.print_button_clicked_callback)
 
     def print_button_clicked_callback(self, widget):
-        self.send_print()
+        if not self.backend == None:
+            printer = self.printer_chooser.get_printer()
+            username = self.user_field.get_text()
+            password = self.password_field.get_text()
+            filename = self.select_file_widget.GetFile()
+            page_per_page = self.page_per_page.get_page_per_page()
+
+            self.backend.send_print(printer = printer,
+                                    username = username,
+                                    password = password,
+                                    filename = filename,
+                                    page_per_page = page_per_page)
+        else:
+            self.debug( "Sembra che non ci sia un backend attaccato\
+ a questa interfaccia, quindi non faccio nulla")
     
-    def send_print(self):
-        # Get printer name
-        printer = self.printer_chooser.get_printer()
-        print "Select printer: %s" % printer
-        
-        # Get connection
-        client = paramiko.SSHClient()
-        username = self.user_field.get_text()
-        password = self.password_field.get_text()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-        client.connect('ssh.dm.unipi.it', 
-                       port=22, 
-                       username=username,
-                       password=password)
-
-        channel = client.get_transport().open_session()
-
-        filename = self.select_file_widget.GetFile()
-        print "Printing %s" % filename
-        f = open(filename, 'r')
-        
-        channel.exec_command("lpr -P%s" % printer)
-        channel.sendall( f.read() )
-        f.close()
-        channel.close()
-        
+           
 
     def debug(self, text):
         print text
