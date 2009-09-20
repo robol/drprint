@@ -46,7 +46,7 @@ class MainWin(gtk.Window):
 <b>1)</b> Inserire nome utente e password \n<b>2)</b> Scegliere il file da stampare e la\
  stampante \n<b>3)</b> Premere il tasto stampa")
 
-        layout_box.pack_start( label )
+        layout_box.pack_start( label , 20 )
         label.show()
         
         label = LeftAlignedLabel("<b>Autenticazione (sui computer dell'Aula 4)</b>")
