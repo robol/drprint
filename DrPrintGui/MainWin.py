@@ -1,15 +1,16 @@
 ## This library is part of DrPrintGui 
-##
+#  -*- coding: utf-8 -*-
 ## This file provide the MainWin object,
 ## that is the main window of the DrPrint
 ## application
+
 
 __author__ = 'Leonardo Robol <leo@robol.it>'
 
 import gtk, pygtk
 
-from Input import AuthBlock, PrinterSettingsBlock, PrintButton
-
+from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel
+from Dialogs import ErrorDialog
 
 class MainWin(gtk.Window):
     """MainWin object for DrPrint"""
@@ -48,18 +49,16 @@ class MainWin(gtk.Window):
         layout_box.pack_start( label )
         label.show()
         
-        label = gtk.Label()
-        label.set_markup("<b>Autenticazione (sui computer dell'Aula 4)</b>")
+        label = LeftAlignedLabel("<b>Autenticazione (sui computer dell'Aula 4)</b>")
         layout_box.pack_start( label )
         label.show()
 
-        self.auth_block = AuthBlock(self.default_spacing)
+        self.auth_block = AuthBlock(self.default_spacing, 10)
         layout_box.pack_start ( self.auth_block )
         self.auth_block.show()
 
         # The PDF file loading and print settings
-        label = gtk.Label()
-        label.set_markup("<b>Configurazione stampante</b>")
+        label = LeftAlignedLabel("<b>Configurazione stampante</b>")
         layout_box.pack_start(label)
         label.show()
 
@@ -78,6 +77,7 @@ class MainWin(gtk.Window):
 
     def connect_all(self):
         self.print_button.connect('clicked', self.print_button_clicked_callback)
+        self.backend.connect('auth_failed', self.auth_failed_callback)
 
     def print_button_clicked_callback(self, widget):
         if not self.backend == None:
@@ -95,6 +95,14 @@ class MainWin(gtk.Window):
         else:
             self.debug( "Sembra che non ci sia un backend attaccato\
  a questa interfaccia, quindi non faccio nulla")
+
+    def auth_failed_callback(self, obj):
+        self.debug("Autenticazione fallita")
+        dialog = ErrorDialog("Autenticazione Fallita",
+                             "<b>Autenticazione Fallita</b>\nLo username e la password forniti non sono\n\
+corretti. L'autenticazione su ssh.dm.unipi.it\nnon è andata a buon fine.")
+        dialog.run()
+        dialog.destroy()
     
            
 

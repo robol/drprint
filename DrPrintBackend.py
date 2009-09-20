@@ -1,12 +1,14 @@
 ## Some useful function to help DrPrint to
 # -*- coding: utf-8 -*-
 
-import paramiko
+import paramiko, gobject
 
-class Backend():
-    
+class Backend(gobject.GObject):
+
     def __init__(self):
-        pass
+        super(Backend, self).__init__()
+
+        gobject.signal_new("auth_failed", Backend, gobject.SIGNAL_RUN_FIRST, None, ())
 
     def send_print(self, printer, username, password, page_per_page, filename):
         # Get printer name
@@ -16,10 +18,14 @@ class Backend():
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        client.connect('ssh.dm.unipi.it', 
-                       port=22, 
-                       username=username,
-                       password=password)
+        try:
+            client.connect('ssh.dm.unipi.it', 
+                           port=22, 
+                           username=username,
+                           password=password)
+        except paramiko.AuthenticationException, e:
+            self.emit('auth_failed')
+            return
 
         channel = client.get_transport().open_session()
         

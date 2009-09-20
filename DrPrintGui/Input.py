@@ -2,6 +2,18 @@
 
 import gtk, pygtk, gobject
 
+class LeftAlignedLabel(gtk.Alignment):
+    
+    def __init__(self, markup, left_padding=0):
+        
+        gtk.Alignment.__init__(self, 0,0.5,0,0)
+        
+        label = gtk.Label()
+        label.set_markup("  "*left_padding + markup)
+
+        self.add(label)
+        label.show()
+
 class UsernameField(gtk.Entry):
     
     def __init__(self, parent=None):
@@ -22,7 +34,7 @@ class PasswordField(gtk.Entry):
 
 class AuthBlock(gtk.HBox):
     
-    def __init__(self, default_spacing):
+    def __init__(self, default_spacing=5, left_padding=0):
         
         gtk.HBox.__init__(self)
 
@@ -32,11 +44,11 @@ class AuthBlock(gtk.HBox):
         vbox1 = gtk.VBox()
         vbox2 = gtk.VBox()
 
-        label = gtk.Label("Utente")
+        label = LeftAlignedLabel("Utente", 2)
         vbox1.pack_start( label )
         label.show()
 
-        label = gtk.Label("Password")
+        label = LeftAlignedLabel("Password", 2)
         vbox1.pack_start( label )
         label.show()
 
@@ -134,7 +146,7 @@ class PagePerPageComboBox(gtk.HBox):
 
 class PrinterSettingsBlock(gtk.HBox):
     
-    def __init__(self, default_spacing = 5):
+    def __init__(self, default_spacing = 5, left_padding=0):
          
         gtk.HBox.__init__(self)
         
@@ -143,7 +155,7 @@ class PrinterSettingsBlock(gtk.HBox):
 
         self.set_spacing(default_spacing)
 
-        label = gtk.Label("Stampante")
+        label = LeftAlignedLabel("Stampante", 2)
         vbox1.pack_start(label)
         label.show()
 
@@ -151,7 +163,7 @@ class PrinterSettingsBlock(gtk.HBox):
         vbox2.pack_start( self.printer_chooser )
         self.printer_chooser.show()
 
-        label = gtk.Label("File")
+        label = LeftAlignedLabel("File", 2)
         vbox1.pack_start( label )
         label.show()
 
@@ -159,7 +171,7 @@ class PrinterSettingsBlock(gtk.HBox):
         vbox2.pack_start (self.select_file_widget)
         self.select_file_widget.show()
 
-        label = gtk.Label("Pagine per foglio")
+        label = LeftAlignedLabel("Pagine per foglio", 2)
         vbox1.pack_start(label)
         label.show()
         
