@@ -86,6 +86,7 @@ class MainWin(gtk.Window):
     def connect_all(self):
         self.print_button.connect('clicked', self.print_button_clicked_callback)
         self.backend.connect('auth_failed', self.auth_failed_callback)
+        self.backend.connect('io_error', self.io_error_callback)
 
     def print_button_clicked_callback(self, widget):
         if not self.backend == None:
@@ -113,6 +114,17 @@ class MainWin(gtk.Window):
         dialog = ErrorDialog("Autenticazione Fallita",
                              "<b>Autenticazione Fallita</b>\nLo username e la password forniti non sono\n\
 corretti. L'autenticazione su ssh.dm.unipi.it\nnon è andata a buon fine.")
+        dialog.run()
+        dialog.destroy()
+
+    def io_error_callback(self, obj):
+        
+        self.debug("Errore di I/O")
+        dialog = ErrorDialog("Errore di I/O",
+                             "<b>Errore di I/O</b>\n\
+C'è stato un errore nella lettura o nella\n \
+trasmissione del file.")
+
         dialog.run()
         dialog.destroy()
     

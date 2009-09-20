@@ -9,6 +9,7 @@ class Backend(gobject.GObject):
         super(Backend, self).__init__()
 
         gobject.signal_new("auth_failed", Backend, gobject.SIGNAL_RUN_FIRST, None, ())
+        gobject.signal_new('io_error', Backend, gobject.SIGNAL_RUN_FIRST, None, ())
 
     def send_print(self, printer, username, password, page_per_page, filename, page_range):
         # Get printer name
@@ -30,7 +31,12 @@ class Backend(gobject.GObject):
         channel = client.get_transport().open_session()
         
         print "Printing %s" % filename
-        f = open(filename, 'r')
+
+        try:
+            f = open(filename, 'r')
+        except IOError:
+            self.emit('io_error')
+            return
 
         # Questo è inevitabile.. :)
         cmd = "lpr -P%s " % printer
@@ -51,8 +57,20 @@ class Backend(gobject.GObject):
         
         ## Diamo il comando sul canale e infiliamo il file
         ## dentro lo stdin :)
+        print "Eseguo %s" % cmd
+
         channel.exec_command(cmd)
-        channel.sendall( f.read() )
+        try:
+            content = f.read()
+        except IOError:
+            self.emit('io_error')
+            return
+
+        try:
+            channel.sendall( content )
+        except socket.timeout, socket.error:
+            self.emit('io_error')
+            return
         f.close()
         channel.close()
 
