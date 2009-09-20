@@ -99,8 +99,8 @@ class SelectFileWidget(gtk.HBox):
             title = "Seleziona file da stampare",
             parent = None,
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            buttons=("Cancel", 1, "OK", 2) )
-        if chooser.run() == 2:
+            buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK) )
+        if chooser.run() == gtk.RESPONSE_OK:
             self.Filename.set_text(chooser.get_filename())
         
         chooser.destroy()

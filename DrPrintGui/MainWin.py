@@ -97,6 +97,8 @@ class MainWin(gtk.Window):
  a questa interfaccia, quindi non faccio nulla")
 
     def auth_failed_callback(self, obj):
+        """Questa funzione gestisce l'eventualità che utente
+        e password siano errati"""
         self.debug("Autenticazione fallita")
         dialog = ErrorDialog("Autenticazione Fallita",
                              "<b>Autenticazione Fallita</b>\nLo username e la password forniti non sono\n\
