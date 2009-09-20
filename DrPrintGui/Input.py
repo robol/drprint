@@ -195,3 +195,55 @@ class PrinterSettingsBlock(gtk.HBox):
         return self.page_per_page.get_page_per_page()
 
 
+
+class PageRangeBlock(gtk.VBox):
+    
+    def __init__(self):
+        
+        gtk.VBox.__init__(self)
+
+        self.check_button = gtk.CheckButton("Stampa solo una parte del documento",
+                                       True)
+
+        self.check_button.set_active(False)
+
+        self.check_button.connect('clicked', self.check_button_callback)
+
+        self.pack_start(self.check_button)
+        self.check_button.show()
+
+        self.hbox = gtk.HBox()
+        
+        self.range_field = gtk.Entry()
+
+        label = LeftAlignedLabel("Range di pagine", 2)
+        self.hbox.pack_start(label)
+        self.hbox.pack_start(self.range_field)
+        label.show()
+
+        self.pack_start(self.hbox)
+
+        self.range_field.show()
+
+        self.hbox.show()
+        self.hbox.set_spacing( 5 )
+        self.hbox.set_sensitive(False)
+
+    def check_button_callback(self, obj):
+        
+        if self.check_button.get_active() == False:
+            self.hbox.set_sensitive(False)
+        else:
+            self.hbox.set_sensitive(True)
+
+    def get_page_range(self):
+        
+        if self.check_button.get_active() == False:
+            return None
+
+        return self.range_field.get_text()
+
+        
+            
+
+        

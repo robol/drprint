@@ -9,7 +9,7 @@ __author__ = 'Leonardo Robol <leo@robol.it>'
 
 import gtk, pygtk
 
-from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel
+from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, PageRangeBlock
 from Dialogs import ErrorDialog
 
 class MainWin(gtk.Window):
@@ -66,6 +66,14 @@ class MainWin(gtk.Window):
         layout_box.pack_start(self.printer_settings_block)
         self.printer_settings_block.show()
 
+        label = LeftAlignedLabel("<b>Configurazione Avanzata</b>")
+        layout_box.pack_start(label)
+        label.show()
+
+        self.page_range_block = PageRangeBlock()
+        layout_box.pack_start(self.page_range_block)
+        self.page_range_block.show()
+
         self.print_button = PrintButton()
         layout_box.pack_start(self.print_button)
         self.print_button.show()
@@ -86,12 +94,14 @@ class MainWin(gtk.Window):
             password = self.auth_block.get_password()
             filename = self.printer_settings_block.get_filename()
             page_per_page = self.printer_settings_block.get_page_per_page()
+            page_range = self.page_range_block.get_page_range()
 
             self.backend.send_print(printer = printer,
                                     username = username,
                                     password = password,
                                     filename = filename,
-                                    page_per_page = page_per_page)
+                                    page_per_page = page_per_page,
+                                    page_range = page_range)
         else:
             self.debug( "Sembra che non ci sia un backend attaccato\
  a questa interfaccia, quindi non faccio nulla")

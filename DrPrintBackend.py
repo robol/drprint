@@ -10,7 +10,7 @@ class Backend(gobject.GObject):
 
         gobject.signal_new("auth_failed", Backend, gobject.SIGNAL_RUN_FIRST, None, ())
 
-    def send_print(self, printer, username, password, page_per_page, filename):
+    def send_print(self, printer, username, password, page_per_page, filename, page_range):
         # Get printer name
         print "Selected printer: %s" % printer
     
@@ -37,12 +37,20 @@ class Backend(gobject.GObject):
 
         cmd_opts = ""
 
+        ## Pagine logiche per pagine
         if not page_per_page == 1:
             cmd_opts += "number-up=%s " % str(page_per_page)
 
+        ## Da a
+        if not page_range == None:
+            cmd_opts += "page-ranges=%s" % page_range
+
+        ## Se ci sono opzioni dai il -o e specificale
         if not cmd_opts == "":
             cmd = cmd + "-o %s" % cmd_opts
         
+        ## Diamo il comando sul canale e infiliamo il file
+        ## dentro lo stdin :)
         channel.exec_command(cmd)
         channel.sendall( f.read() )
         f.close()
