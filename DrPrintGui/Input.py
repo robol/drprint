@@ -20,6 +20,44 @@ class PasswordField(gtk.Entry):
         self.set_text ("Password")
         self.set_visibility(False)
 
+class AuthBlock(gtk.HBox):
+    
+    def __init__(self, default_spacing):
+        
+        gtk.HBox.__init__(self)
+
+        self.user_field = UsernameField()
+        self.password_field = PasswordField()
+        
+        vbox1 = gtk.VBox()
+        vbox2 = gtk.VBox()
+
+        label = gtk.Label("Utente")
+        vbox1.pack_start( label )
+        label.show()
+
+        label = gtk.Label("Password")
+        vbox1.pack_start( label )
+        label.show()
+
+        vbox2.pack_start(self.user_field)
+        vbox2.pack_start(self.password_field)
+
+        self.user_field.show()
+        self.password_field.show()
+
+        self.pack_start(vbox1)
+        self.pack_start(vbox2)
+
+        vbox1.show()
+        vbox2.show()
+
+    def get_username(self):
+        return self.user_field.get_text()
+
+    def get_password(self):
+        return self.password_field.get_text()
+
 class PrintButton(gtk.Button):
     
     def __init__(self, parent=None):
@@ -93,3 +131,55 @@ class PagePerPageComboBox(gtk.HBox):
 
     def get_page_per_page(self):
         return self.combobox.get_active_text()
+
+class PrinterSettingsBlock(gtk.HBox):
+    
+    def __init__(self, default_spacing = 5):
+         
+        gtk.HBox.__init__(self)
+        
+        vbox1 = gtk.VBox(False, default_spacing)
+        vbox2 = gtk.VBox(False, default_spacing)
+
+        self.set_spacing(default_spacing)
+
+        label = gtk.Label("Stampante")
+        vbox1.pack_start(label)
+        label.show()
+
+        self.printer_chooser = PrinterComboBox()
+        vbox2.pack_start( self.printer_chooser )
+        self.printer_chooser.show()
+
+        label = gtk.Label("File")
+        vbox1.pack_start( label )
+        label.show()
+
+        self.select_file_widget = SelectFileWidget()
+        vbox2.pack_start (self.select_file_widget)
+        self.select_file_widget.show()
+
+        label = gtk.Label("Pagine per foglio")
+        vbox1.pack_start(label)
+        label.show()
+        
+        self.page_per_page = PagePerPageComboBox()
+        vbox2.pack_start(self.page_per_page)
+        self.page_per_page.show()
+
+        self.pack_start(vbox1)
+        self.pack_start(vbox2)
+
+        vbox1.show()
+        vbox2.show()
+
+    def get_filename(self):
+        return self.select_file_widget.GetFile()
+
+    def get_printer(self):
+        return self.printer_chooser.get_printer()
+
+    def get_page_per_page(self):
+        return self.page_per_page.get_page_per_page()
+
+

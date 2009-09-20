@@ -1,5 +1,5 @@
 ## Some useful function to help DrPrint to
-## print
+# -*- coding: utf-8 -*-
 
 import paramiko
 
@@ -25,8 +25,19 @@ class Backend():
         
         print "Printing %s" % filename
         f = open(filename, 'r')
+
+        # Questo è inevitabile.. :)
+        cmd = "lpr -P%s " % printer
+
+        cmd_opts = ""
+
+        if not page_per_page == 1:
+            cmd_opts += "number-up=%s " % str(page_per_page)
+
+        if not cmd_opts == "":
+            cmd = cmd + "-o %s" % cmd_opts
         
-        channel.exec_command("lpr -P%s" % printer)
+        channel.exec_command(cmd)
         channel.sendall( f.read() )
         f.close()
         channel.close()
