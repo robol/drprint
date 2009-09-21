@@ -84,7 +84,7 @@ class SelectFileWidget(gtk.HBox):
         self.set_spacing (5)
 
         self.Filename = gtk.Entry()
-        self.Browser = gtk.Button("Seleziona File")
+        self.Browser = gtk.Button("Sfoglia")
 
         self.Browser.connect('clicked', self.SelectFile)
 
@@ -117,6 +117,8 @@ class PrinterComboBox(gtk.HBox):
         self.combobox = gtk.combo_box_new_text()
         self.combobox.append_text("cdc7")
         self.combobox.append_text("cdcpt")
+        self.combobox.append_text("cdc8")
+        self.combobox.append_text("cdc4")
 
         self.combobox.set_active(1)
 
@@ -179,6 +181,14 @@ class PrinterSettingsBlock(gtk.HBox):
         vbox2.pack_start(self.page_per_page)
         self.page_per_page.show()
 
+        label = LeftAlignedLabel("Numero di copie", 2)
+        vbox1.pack_start(label)
+        label.show()
+
+        self.copies = CopiesField()
+        vbox2.pack_start(self.copies)
+        self.copies.show()
+
         self.pack_start(vbox1)
         self.pack_start(vbox2)
 
@@ -193,6 +203,9 @@ class PrinterSettingsBlock(gtk.HBox):
 
     def get_page_per_page(self):
         return self.page_per_page.get_page_per_page()
+
+    def get_copies(self):
+        return self.copies.get_copies()
 
 
 
@@ -242,6 +255,16 @@ class PageRangeBlock(gtk.VBox):
             return None
 
         return self.range_field.get_text()
+
+
+class CopiesField(gtk.Entry):
+
+    def __init__(self):
+        
+        gtk.Entry.__init__(self)
+        
+    def get_copies(self):
+        return self.get_text()
 
         
             

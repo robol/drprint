@@ -11,7 +11,7 @@ class Backend(gobject.GObject):
         gobject.signal_new("auth_failed", Backend, gobject.SIGNAL_RUN_FIRST, None, ())
         gobject.signal_new('io_error', Backend, gobject.SIGNAL_RUN_FIRST, None, ())
 
-    def send_print(self, printer, username, password, page_per_page, filename, page_range):
+    def send_print(self, printer, username, password, page_per_page, filename, page_range, copies):
         # Get printer name
         print "Selected printer: %s" % printer
     
@@ -41,6 +41,11 @@ class Backend(gobject.GObject):
         # Questo è inevitabile.. :)
         cmd = "lpr -P%s " % printer
 
+        # Nunmero di pagine
+        if copies.isdigit():
+            cmd = cmd + "-# %s " % copies
+
+
         cmd_opts = ""
 
         ## Pagine logiche per pagine
@@ -54,6 +59,8 @@ class Backend(gobject.GObject):
         ## Se ci sono opzioni dai il -o e specificale
         if not cmd_opts == "":
             cmd = cmd + "-o %s" % cmd_opts
+
+       
         
         ## Diamo il comando sul canale e infiliamo il file
         ## dentro lo stdin :)

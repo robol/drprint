@@ -21,7 +21,7 @@ class MainWin(gtk.Window):
         
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
-        self.set_title = "DrPrint 0.1"
+        self.set_title = "DrPrint 0.2"
         self.set_border_width(10)
 
         self.default_spacing = 5
@@ -36,7 +36,7 @@ class MainWin(gtk.Window):
         """This function builds up the interface using pieces
         from DrPrintGui"""
 
-        # The main LayOut VBox
+        # The main Layout VBox
         layout_box = gtk.VBox()
         layout_box.set_spacing( self.default_spacing )
 
@@ -96,13 +96,15 @@ class MainWin(gtk.Window):
             filename = self.printer_settings_block.get_filename()
             page_per_page = self.printer_settings_block.get_page_per_page()
             page_range = self.page_range_block.get_page_range()
+            copies = self.printer_settings_block.get_copies()
 
             self.backend.send_print(printer = printer,
                                     username = username,
                                     password = password,
                                     filename = filename,
                                     page_per_page = page_per_page,
-                                    page_range = page_range)
+                                    page_range = page_range,
+                                    copies = copies)
         else:
             self.debug( "Sembra che non ci sia un backend attaccato\
  a questa interfaccia, quindi non faccio nulla")
