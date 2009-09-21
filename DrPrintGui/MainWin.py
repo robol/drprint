@@ -66,6 +66,10 @@ class MainWin(gtk.Window):
         layout_box.pack_start(self.printer_settings_block)
         self.printer_settings_block.show()
 
+        self.orientation_select = OrientationSelect()
+        layout_box.pack_start(self.orientation_select)
+        self.orientation_select.show()
+
         label = LeftAlignedLabel("<b>Configurazione Avanzata</b>")
         layout_box.pack_start(label)
         label.show()
@@ -74,9 +78,6 @@ class MainWin(gtk.Window):
         layout_box.pack_start(self.page_range_block)
         self.page_range_block.show()
 
-        self.orientation_select = OrientationSelect()
-        layout_box.pack_start(self.orientation_select)
-        self.orientation_select.show()
 
         self.print_button = PrintButton()
         layout_box.pack_start(self.print_button)

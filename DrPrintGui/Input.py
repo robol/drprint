@@ -101,6 +101,10 @@ class SelectFileWidget(gtk.HBox):
         self.Filename = gtk.Entry()
         self.Browser = gtk.Button("Sfoglia")
 
+        self.Filename.set_tooltip_text("Se hai bisogno di stampare \
+da un programma clicca File -> Stampa -> Stampa su file e crea un \
+file .ps da selezionare qui")
+
         self.Browser.connect('clicked', self.SelectFile)
 
         self.pack_start(self.Filename, 1)
@@ -285,14 +289,14 @@ class CopiesField(gtk.Entry):
 
 
 
-class OrientationSelect(gtk.VBox):
+class OrientationSelect(gtk.HBox):
     
     def __init__(self):
         
-        gtk.VBox.__init__(self)
+        gtk.HBox.__init__(self)
         
         # Un etichetta per capire a cosa servono questi radio button
-        label = LeftAlignedLabel("<b>Orientamento della pagina</b>")
+        label = LeftAlignedLabel("Orientamento", 20)
         self.pack_start( label )
         label.show()
         
@@ -304,13 +308,11 @@ class OrientationSelect(gtk.VBox):
         portrait  = gtk.RadioButton(landscape,
                                       "Verticale",
                                       True)
-        landscape_pad = PaddingLeftWidget(landscape, 20)
-        portrait_pad  = PaddingLeftWidget(portrait, 20)
-        self.pack_start(landscape_pad)
-        self.pack_start(portrait_pad)
+        self.pack_start(landscape)
+        self.pack_start(portrait)
 
-        landscape_pad.show ()
-        portrait_pad.show  ()
+        landscape.show ()
+        portrait.show  ()
 
         portrait.set_active(True)
 
