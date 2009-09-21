@@ -9,10 +9,25 @@ class LeftAlignedLabel(gtk.Alignment):
         gtk.Alignment.__init__(self, 0,0.5,0,0)
         
         label = gtk.Label()
-        label.set_markup("  "*left_padding + markup)
+        label.set_markup(markup)
+        plw = PaddingLeftWidget(label, left_padding)
 
-        self.add(label)
+        self.add(plw)
+        plw.show()
+
+class PaddingLeftWidget(gtk.Table):
+    
+    def __init__(self, widget, padding_left):
+        
+        gtk.Table.__init__(self, 1, 2, False)
+        label = gtk.Label()
+        self.set_col_spacing(0, padding_left)
+        self.attach(label, 0,1,0,1, False, False)
+        self.attach(widget, 1,2,0,1, False, False)
+        
         label.show()
+        widget.show()
+        
 
 class UsernameField(gtk.Entry):
     
@@ -44,11 +59,11 @@ class AuthBlock(gtk.HBox):
         vbox1 = gtk.VBox()
         vbox2 = gtk.VBox()
 
-        label = LeftAlignedLabel("Utente", 2)
+        label = LeftAlignedLabel("Utente", 20)
         vbox1.pack_start( label )
         label.show()
 
-        label = LeftAlignedLabel("Password", 2)
+        label = LeftAlignedLabel("Password", 20)
         vbox1.pack_start( label )
         label.show()
 
@@ -119,6 +134,7 @@ class PrinterComboBox(gtk.HBox):
         self.combobox.append_text("cdcpt")
         self.combobox.append_text("cdc8")
         self.combobox.append_text("cdc4")
+        self.combobox.append_text("cdc9")
 
         self.combobox.set_active(1)
 
@@ -157,7 +173,7 @@ class PrinterSettingsBlock(gtk.HBox):
 
         self.set_spacing(default_spacing)
 
-        label = LeftAlignedLabel("Stampante", 2)
+        label = LeftAlignedLabel("Stampante", 20)
         vbox1.pack_start(label)
         label.show()
 
@@ -165,7 +181,7 @@ class PrinterSettingsBlock(gtk.HBox):
         vbox2.pack_start( self.printer_chooser )
         self.printer_chooser.show()
 
-        label = LeftAlignedLabel("File", 2)
+        label = LeftAlignedLabel("File", 20)
         vbox1.pack_start( label )
         label.show()
 
@@ -173,7 +189,7 @@ class PrinterSettingsBlock(gtk.HBox):
         vbox2.pack_start (self.select_file_widget)
         self.select_file_widget.show()
 
-        label = LeftAlignedLabel("Pagine per foglio", 2)
+        label = LeftAlignedLabel("Pagine per foglio", 20)
         vbox1.pack_start(label)
         label.show()
         
@@ -181,7 +197,7 @@ class PrinterSettingsBlock(gtk.HBox):
         vbox2.pack_start(self.page_per_page)
         self.page_per_page.show()
 
-        label = LeftAlignedLabel("Numero di copie", 2)
+        label = LeftAlignedLabel("Numero di copie", 20)
         vbox1.pack_start(label)
         label.show()
 
@@ -228,8 +244,9 @@ class PageRangeBlock(gtk.VBox):
         self.hbox = gtk.HBox()
         
         self.range_field = gtk.Entry()
+        self.range_field.set_tooltip_text("Indicare pagine e/o intervalli separati da virgole, ad esempio \"1,3-10,12,13,15-17\"")
 
-        label = LeftAlignedLabel("Range di pagine", 2)
+        label = LeftAlignedLabel("Range di pagine", 20)
         self.hbox.pack_start(label)
         self.hbox.pack_start(self.range_field)
         label.show()
@@ -266,6 +283,49 @@ class CopiesField(gtk.Entry):
     def get_copies(self):
         return self.get_text()
 
+
+
+class OrientationSelect(gtk.VBox):
+    
+    def __init__(self):
+        
+        gtk.VBox.__init__(self)
+        
+        # Un etichetta per capire a cosa servono questi radio button
+        label = LeftAlignedLabel("<b>Orientamento della pagina</b>")
+        self.pack_start( label )
+        label.show()
+        
+        # I radio button :)
+        landscape = gtk.RadioButton(None,
+                                      "Orizzontale",
+                                      True)
+
+        portrait  = gtk.RadioButton(landscape,
+                                      "Verticale",
+                                      True)
+        landscape_pad = PaddingLeftWidget(landscape, 20)
+        portrait_pad  = PaddingLeftWidget(portrait, 20)
+        self.pack_start(landscape_pad)
+        self.pack_start(portrait_pad)
+
+        landscape_pad.show ()
+        portrait_pad.show  ()
+
+        portrait.set_active(True)
+
+    def get_orientation(self):
+        
+        if self.landscape.is_active():
+            return "landscape"
+
+        if self.portrait.is_active():
+            return ""
+
+        ## Questo non dovrebbe succedere
+        return None
+
+        
         
             
 
