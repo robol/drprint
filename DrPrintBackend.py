@@ -50,19 +50,19 @@ class Backend(gobject.GObject):
 
         ## Pagine logiche per pagine
         if not page_per_page == 1:
-            cmd_opts += "number-up=%s " % str(page_per_page)
+            cmd_opts += "-o number-up=%s " % str(page_per_page)
 
         ## Da a
         if not page_range == None:
-            cmd_opts += "page-ranges=%s" % page_range
+            cmd_opts += "-o page-ranges=%s" % page_range
 
         ## Orientazione (se è vuoto è verticale)
         if not orientation == "":
-            cmd_opts += "%s " % orientation
+            cmd_opts += "-o %s " % orientation
 
         ## Se ci sono opzioni dai il -o e specificale
         if not cmd_opts == "":
-            cmd = cmd + "-o %s" % cmd_opts
+            cmd = cmd + "%s" % cmd_opts
 
         
         ## Diamo il comando sul canale e infiliamo il file

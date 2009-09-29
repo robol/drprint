@@ -278,14 +278,17 @@ class PageRangeBlock(gtk.VBox):
         return self.range_field.get_text()
 
 
-class CopiesField(gtk.Entry):
+class CopiesField(gtk.SpinButton):
 
     def __init__(self):
         
-        gtk.Entry.__init__(self)
+        gtk.SpinButton.__init__(self)
+        self.set_digits(0)
+        self.set_increments(1,10)
+        self.set_range(0,999)
         
     def get_copies(self):
-        return self.get_text()
+        return str(self.get_value())
 
 
 
@@ -301,27 +304,27 @@ class OrientationSelect(gtk.HBox):
         label.show()
         
         # I radio button :)
-        landscape = gtk.RadioButton(None,
+        self.landscape = gtk.RadioButton(None,
                                       "Orizzontale",
                                       True)
 
-        portrait  = gtk.RadioButton(landscape,
+        self.portrait  = gtk.RadioButton(self.landscape,
                                       "Verticale",
                                       True)
-        self.pack_start(landscape)
-        self.pack_start(portrait)
+        self.pack_start(self.landscape)
+        self.pack_start(self.portrait)
 
-        landscape.show ()
-        portrait.show  ()
+        self.landscape.show ()
+        self.portrait.show  ()
 
-        portrait.set_active(True)
+        self.portrait.set_active(True)
 
     def get_orientation(self):
         
-        if self.landscape.is_active():
+        if self.landscape.get_active():
             return "landscape"
 
-        if self.portrait.is_active():
+        if self.portrait.get_active():
             return ""
 
         ## Questo non dovrebbe succedere
