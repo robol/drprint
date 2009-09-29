@@ -286,6 +286,7 @@ class CopiesField(gtk.SpinButton):
         self.set_digits(0)
         self.set_increments(1,10)
         self.set_range(0,999)
+        self.set_value(1)
         
     def get_copies(self):
         return str(self.get_value())
