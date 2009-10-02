@@ -9,7 +9,7 @@ __author__ = 'Leonardo Robol <leo@robol.it>'
 
 import gtk, pygtk
 
-from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, PageRangeBlock, OrientationSelect
+from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, PageRangeBlock, OrientationSelect, SidesSelect
 from Dialogs import ErrorDialog
 
 class MainWin(gtk.Window):
@@ -77,7 +77,14 @@ class MainWin(gtk.Window):
         self.page_range_block = PageRangeBlock()
         layout_box.pack_start(self.page_range_block)
         self.page_range_block.show()
+        
+        label = LeftAlignedLabel( "<b>Fronte retro</b>" )
+        layout_box.pack_start(label)
+        label.show()
 
+        self.sides_select = SidesSelect()
+        layout_box.pack_start(self.sides_select)
+        self.sides_select.show()
 
         self.print_button = PrintButton()
         layout_box.pack_start(self.print_button)
@@ -103,6 +110,7 @@ class MainWin(gtk.Window):
             page_range = self.page_range_block.get_page_range()
             copies = self.printer_settings_block.get_copies()
             orientation = self.orientation_select.get_orientation()
+            sides = self.sides_select.get_sides_select()
 
             self.backend.send_print(printer = printer,
                                     username = username,
@@ -111,7 +119,8 @@ class MainWin(gtk.Window):
                                     page_per_page = page_per_page,
                                     page_range = page_range,
                                     copies = copies,
-                                    orientation=orientation)
+                                    orientation=orientation,
+                                    sides = sides)
         else:
             self.debug( "Sembra che non ci sia un backend attaccato\
  a questa interfaccia, quindi non faccio nulla")

@@ -331,7 +331,44 @@ class OrientationSelect(gtk.HBox):
         ## Questo non dovrebbe succedere
         return None
 
+class SidesSelect(gtk.VBox):
+
+    def __init__(self):
         
+        gtk.VBox.__init__(self)
+
+        self.one_sided = gtk.RadioButton(None,
+                                         "Solo fronte",
+                                         True)
+        self.two_sided_short_edge = gtk.RadioButton(self.one_sided,
+                                     "Fronte retro sul lato corto",
+                                     True)
+        self.two_sided_long_edge = gtk.RadioButton(self.one_sided,
+                                    "Fronte retro sul lato lungo",
+                                    True)
+
+        for widget in (self.one_sided,
+                       self.two_sided_short_edge,
+                       self.two_sided_long_edge) :
+            a = PaddingLeftWidget(widget, 20)
+            self.pack_start(a)
+            a.show()
+
+        self.two_sided_long_edge.set_active(True)
+            
+    def get_sides_select(self):
+        
+        if( self.one_sided.get_active() ):
+            return "one-sided"
+
+        if( self.two_sided_short_edge.get_active() ):
+            return "two-sided-short-edge"
+
+        if( self.two_sided_long_edge.get_active() ):
+            return "two-sided-long-edge"
+
+        
+                                    
         
             
 

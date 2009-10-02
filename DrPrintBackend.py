@@ -11,7 +11,7 @@ class Backend(gobject.GObject):
         gobject.signal_new("auth_failed", Backend, gobject.SIGNAL_RUN_FIRST, None, ())
         gobject.signal_new('io_error', Backend, gobject.SIGNAL_RUN_FIRST, None, ())
 
-    def send_print(self, printer, username, password, page_per_page, filename, page_range, copies, orientation):
+    def send_print(self, printer, username, password, page_per_page, filename, page_range, copies, orientation, sides):
         # Get printer name
         print "Selected printer: %s" % printer
     
@@ -60,10 +60,13 @@ class Backend(gobject.GObject):
         if not orientation == "":
             cmd_opts += "-o %s " % orientation
 
+        ## Long edge, short edge ed amici vari
+        cmd_opts += "-o sides=%s " % sides
+
         ## Se ci sono opzioni dai il -o e specificale
         if not cmd_opts == "":
             cmd = cmd + "%s" % cmd_opts
-
+       
         
         ## Diamo il comando sul canale e infiliamo il file
         ## dentro lo stdin :)
