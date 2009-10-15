@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+import gtk, pygtk
+from DrPrintGui.MainWin import MainWin
+from DrPrintBackend import Backend
+
+if __name__ == "__main__":
+
+
+   ## Load the Backend that will perform
+   ## all the hard work without being seen
+   ## by the end user. That is -- the sad 
+   ## story of every backend.
+   backend = Backend()
+   
+   ## ...and then the main win! The one
+   ## that will try to attract end user
+   ## with her .. ( find a good word )
+   ## P.S.: We give her a backend, without
+   ## it she will be useless. 
+   mw = MainWin(backend)
+
+   ## Show all :)
+   mw.show()
+
+   ## ..and let's go!
+   gtk.main()

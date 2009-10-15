@@ -1,0 +1,15 @@
+Source: drprint
+Section: unknown
+Priority: extra
+Maintainer: Leonardo Robol <leo@robol.it>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: <insert the upstream URL, if relevant>
+
+Package: drprint
+Architecture: all
+Depends: ${misc:Depends}
+Description: Interfaccia GTK per stampare sulle stampanti di dm.unipi.it
+ Interfaccia GTK che permette di mandare in stampa file
+ ps e pdf sulle stampanti del dipartimento di matematica
+ a Pisa a patto di avere accesso SSH al server ssh.dm.unipi.it
