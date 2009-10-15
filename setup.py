@@ -9,6 +9,7 @@ setup (name='DrPrint',
        packages = ['DrPrintGui'],
        py_modules=['DrPrintBackend'],
        data_files=[('bin', ['drprint']),
+                   ('share/drprint',['drprint_gui.png']),
                    ('share/applications',['drprint.desktop']),
-                   ('share/pixmaps', ['drprint.svg']) ],
+                   ('share/pixmaps', ['drprint.png']) ],
        )

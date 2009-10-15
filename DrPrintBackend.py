@@ -54,7 +54,7 @@ class Backend(gobject.GObject):
 
         ## Da a
         if not page_range == None:
-            cmd_opts += "-o page-ranges=%s" % page_range
+            cmd_opts += "-o page-ranges=%s " % page_range
 
         ## Orientazione (se è vuoto è verticale)
         if not orientation == "":

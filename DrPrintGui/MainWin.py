@@ -8,6 +8,8 @@
 __author__ = 'Leonardo Robol <leo@robol.it>'
 
 import gtk, pygtk
+import os
+import sys
 
 from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, PageRangeBlock, OrientationSelect, SidesSelect
 from Dialogs import ErrorDialog
@@ -40,14 +42,26 @@ class MainWin(gtk.Window):
         layout_box = gtk.VBox()
         layout_box.set_spacing( self.default_spacing )
 
+        # Inseriamo l'immagine di Dr Print
+        drprint_img = gtk.image_new_from_file("/usr/share/drprint/drprint_gui.png")
+
         # Qualche istruzinoe preliminare
         label = gtk.Label()
         label.set_markup("<b>Come usare questo programma:</b>\n\
 <b>1)</b> Inserire nome utente e password \n<b>2)</b> Scegliere il file da stampare e la\
  stampante \n<b>3)</b> Premere il tasto stampa")
 
-        layout_box.pack_start( label , 20 )
+        hbox = gtk.HBox();
+        hbox.show()
+        hbox.set_spacing(self.default_spacing)
+
+        hbox.pack_start(drprint_img)
+        drprint_img.show()
+
+        hbox.pack_start( label )
         label.show()
+
+        layout_box.pack_start(hbox, 20)
         
         label = LeftAlignedLabel("<b>Autenticazione (sui computer dell'Aula 4)</b>")
         layout_box.pack_start( label )

@@ -1,6 +1,6 @@
 ## This library provides User Input fields
 
-import gtk, pygtk, gobject
+import gtk, pygtk, gobject, os
 
 class LeftAlignedLabel(gtk.Alignment):
     
@@ -35,7 +35,7 @@ class UsernameField(gtk.Entry):
         
         gtk.Entry.__init__(self)
 
-        self.set_text( "Utente" )
+        self.set_text( os.getlogin() )
 
 
 class PasswordField(gtk.Entry):
