@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=DrPrint
+Comment[it]=Stampa sulle stampanti della rete dm.unipi.it
+Comment[en]= Print using dm.unipi.it network printers
+Exec=drprint
+Terminal=false
+Type=Application
+StartupNotify=false
+Categories=GNOME;Utility
+Icon=drprint
