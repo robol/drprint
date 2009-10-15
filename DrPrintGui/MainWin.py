@@ -43,7 +43,16 @@ class MainWin(gtk.Window):
         layout_box.set_spacing( self.default_spacing )
 
         # Inseriamo l'immagine di Dr Print
-        drprint_img = gtk.image_new_from_file("/usr/share/drprint/drprint_gui.png")
+        image_file = "/usr/share/drprint/drprint_gui.png"
+        try:
+            os.stat(image_file)
+        except OSError:
+            image_file = "/usr/local/share/drprint/drprint_gui.png"
+            try:
+                os.stat(image_file)
+            except OSError:
+                image_file = "drprint_gui.png"
+        drprint_img = gtk.image_new_from_file(image_file)
 
         # Qualche istruzinoe preliminare
         label = gtk.Label()
