@@ -35,7 +35,7 @@ class UsernameField(gtk.Entry):
         
         gtk.Entry.__init__(self)
 
-        self.set_text( os.getlogin() )
+        self.set_text( os.getenv("USER") )
 
 
 class PasswordField(gtk.Entry):
