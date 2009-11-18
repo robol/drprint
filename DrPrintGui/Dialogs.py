@@ -1,27 +1,39 @@
 import gtk, pygtk
 
-class Dialog(gtk.Dialog):
+class Dialog(gtk.MessageDialog):
     
-    def __init__(self, title=None, buttons=None, text=None):
+    def __init__(self, buttons=gtk.BUTTONS_NONE, mtype=gtk.MESSAGE_INFO):
 
-        gtk.Dialog.__init__(self, title,
-                            None,
-                            0,
-                            buttons)
-
-        
+        gtk.MessageDialog.__init__(self,
+                                   parent = None,
+                                   flags = 0,
+                                   type = mtype,
+                                   buttons = buttons)
+                                   
 
 class ErrorDialog(Dialog):
 
     def __init__(self, error, message):
         
-        Dialog.__init__(self, "Errore: %s" % error,
-                        buttons = (gtk.STOCK_OK, gtk.RESPONSE_OK)
+        Dialog.__init__(self, 
+                        buttons = gtk.BUTTONS_OK,
+                        mtype = gtk.MESSAGE_ERROR
                         )
 
-        label = gtk.Label()
-        label.set_markup(message)
-        self.get_content_area().pack_start( label , False, False, 15 )
-        label.show()
+        self.set_markup(error)
+        self.format_secondary_markup(message)
         
+    
+class MessageDialog(Dialog):
+    
+    def __init__(self, title, text):
+        
+        Dialog.__init__(self,
+                        buttons = gtk.BUTTONS_OK_CANCEL,
+                        mtype = gtk.MESSAGE_WARNING
+                        )
+        
+        self.set_markup(title)
+        self.format_secondary_markup(text)
+
     
