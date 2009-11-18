@@ -58,9 +58,7 @@ class MainWin(gtk.Window):
         label = gtk.Label()
         label.set_markup("<b>Come usare questo programma:</b>\n\
 <b>1)</b> Inserire nome utente e password \n<b>2)</b> Scegliere il file da stampare e la\
- stampante \n<b>3)</b> Premere il tasto stampa\n\
-<b>Attenzione: </b>Questo programma stampa solo file che possono\n\
-essere compresi dalle stampanti, ovvero <b>PS</b> e <b>PDF</b>")
+ stampante \n<b>3)</b> Premere il tasto stampa")
 
         hbox = gtk.HBox();
         hbox.show()

@@ -12,7 +12,7 @@ import os
 import sys
 
 from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, PageRangeBlock, OrientationSelect, SidesSelect
-from Dialogs import ErrorDialog
+from Dialogs import ErrorDialog, MessageDialog
 
 class MainWin(gtk.Window):
     """MainWin object for DrPrint"""
@@ -58,7 +58,9 @@ class MainWin(gtk.Window):
         label = gtk.Label()
         label.set_markup("<b>Come usare questo programma:</b>\n\
 <b>1)</b> Inserire nome utente e password \n<b>2)</b> Scegliere il file da stampare e la\
- stampante \n<b>3)</b> Premere il tasto stampa")
+ stampante \n<b>3)</b> Premere il tasto stampa\n\
+<b>Attenzione: </b>Questo programma stampa solo file che possono\n\
+essere compresi dalle stampanti, ovvero <b>PS</b> e <b>PDF</b>")
 
         hbox = gtk.HBox();
         hbox.show()
@@ -135,15 +137,29 @@ class MainWin(gtk.Window):
             orientation = self.orientation_select.get_orientation()
             sides = self.sides_select.get_sides_select()
 
-            self.backend.send_print(printer = printer,
-                                    username = username,
-                                    password = password,
-                                    filename = filename,
-                                    page_per_page = page_per_page,
-                                    page_range = page_range,
-                                    copies = copies,
-                                    orientation=orientation,
-                                    sides = sides)
+            if not (filename.lower().endswith("pdf") |
+                    filename.lower().endswith("ps")):
+                dialog = MessageDialog("Attenzione!",
+                                       "Il file che hai scelto di stampare\n\
+non sembra essere un file <b>PS</b>,\n\
+un file <b>PDF</b> o un file di testo, e quindi \n\
+probabilmente il programma non stamperà\n\
+quello che vuoi.\n\
+Se vuoi continuare premi OK")
+                resp = dialog.run()
+                dialog.destroy()
+                
+
+            if resp == gtk.RESPONSE_OK:
+                self.backend.send_print(printer = printer,
+                                        username = username,
+                                        password = password,
+                                        filename = filename,
+                                        page_per_page = page_per_page,
+                                        page_range = page_range,
+                                        copies = copies,
+                                        orientation=orientation,
+                                        sides = sides)
         else:
             self.debug( "Sembra che non ci sia un backend attaccato\
  a questa interfaccia, quindi non faccio nulla")
@@ -153,7 +169,7 @@ class MainWin(gtk.Window):
         e password siano errati"""
         self.debug("Autenticazione fallita")
         dialog = ErrorDialog("Autenticazione Fallita",
-                             "<b>Autenticazione Fallita</b>\nLo username e la password forniti non sono\n\
+                             "Lo username e la password forniti non sono\n\
 corretti. L'autenticazione su ssh.dm.unipi.it\nnon è andata a buon fine.")
         dialog.run()
         dialog.destroy()
@@ -162,8 +178,7 @@ corretti. L'autenticazione su ssh.dm.unipi.it\nnon è andata a buon fine.")
         
         self.debug("Errore di I/O")
         dialog = ErrorDialog("Errore di I/O",
-                             "<b>Errore di I/O</b>\n\
-C'è stato un errore nella lettura o nella\n \
+                             "C'è stato un errore nella lettura o nella\n \
 trasmissione del file.")
 
         dialog.run()

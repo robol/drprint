@@ -1,3 +1,16 @@
+drprint (0.7-2) karmic; urgency=low
+
+  * Tolto del testo inutile
+
+ -- Leonardo Robol <leonardo@debby>  Wed, 18 Nov 2009 11:09:12 +0100
+
+drprint (0.7-1) karmic; urgency=low
+
+  * Cambiata la classe Dialog in modo da creare dei dialoghi bellini
+  * Aggiunta una notifica che il file stampato non sembra PDF o PS
+
+ -- Leonardo Robol <leonardo@debby>  Wed, 18 Nov 2009 11:06:06 +0100
+
 drprint (0.6-3) karmic; urgency=low
 
   * Cambiato il metodo per ottenere il nome utente
