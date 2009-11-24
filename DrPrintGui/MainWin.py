@@ -135,6 +135,8 @@ class MainWin(gtk.Window):
             orientation = self.orientation_select.get_orientation()
             sides = self.sides_select.get_sides_select()
 
+            resp = gtk.RESPONSE_OK
+
             if not (filename.lower().endswith("pdf") |
                     filename.lower().endswith("ps")):
                 dialog = MessageDialog("Attenzione!",
