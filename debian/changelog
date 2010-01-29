@@ -1,3 +1,11 @@
+drprint (0.8-1) karmic; urgency=low
+
+  * Cambiato il backend. Ora non manda più il file in pipe,
+    che era causa di innumerevoli problemi, ma lo copia 
+    sulla tmp del server e poi lo cancella dopo la stampa. 
+
+ -- Leonardo Robol <leonardo@debby>  Fri, 29 Jan 2010 11:25:36 +0100
+
 drprint (0.7-5) karmic; urgency=low
 
   * Aggiunto try: except: per essere più sicuri. 

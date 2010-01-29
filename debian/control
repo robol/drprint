@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Leonardo Robol <leo@robol.it>
 Build-Depends: debhelper (>= 7)
 Standards-Version: 3.8.1
-Homepage: <insert the upstream URL, if relevant>
+Homepage: http://poisson.phc.unipi.it/~robol/
 
 Package: drprint
 Architecture: all

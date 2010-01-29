@@ -80,9 +80,7 @@ class Backend(gobject.GObject):
         attr = sftp.put(filename, "/tmp/drprint_tmp_%s" % username)
         print "File trasferito, dimensione: %d bytes" % attr.st_size
 
-        # Aspettiamo che il trasferimento avvenga, appena trovo 
-        # un metodo serio per farlo rimuovo questo time.sleep()
-
+        # Apriamo la sessione.
         chan = t.open_session()
 
         # Diamo il comando sul canale
