@@ -77,21 +77,22 @@ class Backend(gobject.GObject):
         if not cmd_opts == "":
             cmd = cmd + "%s" % cmd_opts + " /tmp/drprint_tmp_%s" % username
        
-        sftp.put(filename, "/tmp/drprint_tmp_%s" % username)
+        attr = sftp.put(filename, "/tmp/drprint_tmp_%s" % username)
+        print "File trasferito, dimensione: %d bytes" % attr.st_size
 
         # Aspettiamo che il trasferimento avvenga, appena trovo 
         # un metodo serio per farlo rimuovo questo time.sleep()
-        time.sleep(1)
 
         chan = t.open_session()
 
         # Diamo il comando sul canale
         print "Eseguo %s" % cmd
         chan.exec_command(cmd)
-        chan.close()
-        exit_status = chan.recv_exit_status()
 
-        sftp.remove("/tmp/drprint_tmp_%s" % username)
+        exit_status = chan.recv_exit_status()
+        chan.close()
+        if exit_status == 0:
+            sftp.remove("/tmp/drprint_tmp_%s" % username)
 
         print "Printed %s on %s (exit status = %d)" % (filename, printer, exit_status)
         if exit_status != 0:
