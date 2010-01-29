@@ -12,7 +12,8 @@ import os
 import sys
 
 from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, PageRangeBlock, OrientationSelect, SidesSelect
-from Dialogs import ErrorDialog, MessageDialog
+from Dialogs import ErrorDialog, MessageDialog, InfoDialog
+from DrPrintBackend import PrintingError
 
 class MainWin(gtk.Window):
     """MainWin object for DrPrint"""
@@ -23,7 +24,7 @@ class MainWin(gtk.Window):
         
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
-        self.set_title = "DrPrint 0.2"
+        self.set_title = "DrPrint 0.8"
         self.set_border_width(10)
 
         self.default_spacing = 5
@@ -151,15 +152,28 @@ Se vuoi continuare premi OK")
                 
 
             if resp == gtk.RESPONSE_OK:
-                self.backend.send_print(printer = printer,
-                                        username = username,
-                                        password = password,
-                                        filename = filename,
-                                        page_per_page = page_per_page,
-                                        page_range = page_range,
-                                        copies = copies,
-                                        orientation=orientation,
-                                        sides = sides)
+                try:
+                    self.backend.send_print(printer = printer,
+                                            username = username,
+                                            password = password,
+                                            filename = filename,
+                                            page_per_page = page_per_page,
+                                            page_range = page_range,
+                                            copies = copies,
+                                            orientation=orientation,
+                                            sides = sides)
+                except PrintingError, e:
+                    # Comunichiamo il fallimento
+                    dialog = ErrorDialog("Errore di stampa",
+                                         "Il seguente errore si è verificato durante la stampa: %s." % e)
+                    dialog.run()
+                    dialog.destroy()
+                else:
+                    dialog = InfoDialog("Stampa effettuata",
+                                        "Il file %s è stato stampato correttamente sulla stampante <b>%s</b>."
+                                        % (filename, printer))
+                    dialog.run()
+                    dialog.destroy()
         else:
             self.debug( "Sembra che non ci sia un backend attaccato\
  a questa interfaccia, quindi non faccio nulla")

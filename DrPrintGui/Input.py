@@ -44,7 +44,7 @@ class PasswordField(gtk.Entry):
         
         gtk.Entry.__init__(self)
 
-        self.set_text ("Password")
+        self.set_text ("")
         self.set_visibility(False)
 
 class AuthBlock(gtk.HBox):

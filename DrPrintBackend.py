@@ -1,7 +1,15 @@
 ## Some useful function to help DrPrint to
 # -*- coding: utf-8 -*-
 
-import paramiko, gobject
+import paramiko, gobject, select, time
+
+class PrintingError(Exception):
+
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
 
 class Backend(gobject.GObject):
 
@@ -16,8 +24,11 @@ class Backend(gobject.GObject):
         print "Selected printer: %s" % printer
     
         # Get connection
-        client = paramiko.SSHClient()
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        try:
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        except:
+            raise PrintingError('Impossibili inizializzare paramiko')
 
         try:
             client.connect('ssh.dm.unipi.it', 
@@ -27,22 +38,21 @@ class Backend(gobject.GObject):
         except paramiko.AuthenticationException, e:
             self.emit('auth_failed')
             return
-
-        channel = client.get_transport().open_session()
+        
+        t = client.get_transport()
+        sftp = paramiko.SFTPClient.from_transport(t)
         
         print "Printing %s" % filename
-
-        try:
-            f = open(filename, 'r')
-        except IOError:
-            self.emit('io_error')
-            return
 
         # Questo è inevitabile.. :)
         cmd = "lpr -P%s " % printer
 
-        # Nunmero di pagine
-        if copies.isdigit():
+        # Numero di pagine
+        try:
+            copies = int(float(copies))
+        except ValueError:
+            copies = 1
+        if copies is not 1:
             cmd = cmd + "-# %s " % copies
 
 
@@ -65,26 +75,24 @@ class Backend(gobject.GObject):
 
         ## Se ci sono opzioni dai il -o e specificale
         if not cmd_opts == "":
-            cmd = cmd + "%s" % cmd_opts
+            cmd = cmd + "%s" % cmd_opts + " /tmp/drprint_tmp_%s" % username
        
-        
-        ## Diamo il comando sul canale e infiliamo il file
-        ## dentro lo stdin :)
+        sftp.put(filename, "/tmp/drprint_tmp_%s" % username)
+
+        # Aspettiamo che il trasferimento avvenga, appena trovo 
+        # un metodo serio per farlo rimuovo questo time.sleep()
+        time.sleep(1)
+
+        chan = t.open_session()
+
+        # Diamo il comando sul canale
         print "Eseguo %s" % cmd
+        chan.exec_command(cmd)
+        chan.close()
+        exit_status = chan.recv_exit_status()
 
-        channel.exec_command(cmd)
-        try:
-            content = f.read()
-        except IOError:
-            self.emit('io_error')
-            return
+        sftp.remove("/tmp/drprint_tmp_%s" % username)
 
-        try:
-            channel.sendall( content )
-        except socket.timeout, socket.error:
-            self.emit('io_error')
-            return
-        f.close()
-        channel.close()
-
-        print "Printed %s on %s" % (filename, printer)
+        print "Printed %s on %s (exit status = %d)" % (filename, printer, exit_status)
+        if exit_status != 0:
+            raise PrintingError('Il comando <b>lpr</b> non e\' andato a buon fine (Exit status = %d)' % exit_status)

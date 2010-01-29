@@ -22,6 +22,19 @@ class ErrorDialog(Dialog):
 
         self.set_markup(error)
         self.format_secondary_markup(message)
+
+class InfoDialog(Dialog):
+
+    def __init__(self, error, message):
+        
+        Dialog.__init__(self, 
+                        buttons = gtk.BUTTONS_OK,
+                        mtype = gtk.MESSAGE_INFO
+                        )
+
+        self.set_markup(error)
+        self.format_secondary_markup(message)
+
         
     
 class MessageDialog(Dialog):
