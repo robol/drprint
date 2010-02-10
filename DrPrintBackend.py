@@ -16,8 +16,6 @@ class Backend(gobject.GObject):
     def __init__(self):
         super(Backend, self).__init__()
 
-        gobject.signal_new("auth_failed", Backend, gobject.SIGNAL_RUN_FIRST, None, ())
-        gobject.signal_new('io_error', Backend, gobject.SIGNAL_RUN_FIRST, None, ())
 
     def send_print(self, printer, username, password, page_per_page, filename, page_range, copies, orientation, sides):
         # Get printer name
@@ -36,8 +34,7 @@ class Backend(gobject.GObject):
                            username=username,
                            password=password)
         except paramiko.AuthenticationException, e:
-            self.emit('auth_failed')
-            return
+            raise PrintingError('Autenticazione fallita')
         
         t = client.get_transport()
         sftp = paramiko.SFTPClient.from_transport(t)
@@ -76,9 +73,13 @@ class Backend(gobject.GObject):
         ## Se ci sono opzioni dai il -o e specificale
         if not cmd_opts == "":
             cmd = cmd + "%s" % cmd_opts + " /tmp/drprint_tmp_%s" % username
-       
-        attr = sftp.put(filename, "/tmp/drprint_tmp_%s" % username)
-        print "File trasferito, dimensione: %d bytes" % attr.st_size
+
+        try:
+            attr = sftp.put(filename, "/tmp/drprint_tmp_%s" % username)
+        except OSError:
+            raise PrintingError('Errore nel trasferimento del file')
+        else:
+            print "File trasferito, dimensione: %d bytes" % attr.st_size
 
         # Apriamo la sessione.
         chan = t.open_session()

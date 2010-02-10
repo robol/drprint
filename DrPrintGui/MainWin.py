@@ -121,8 +121,6 @@ class MainWin(gtk.Window):
 
     def connect_all(self):
         self.print_button.connect('clicked', self.print_button_clicked_callback)
-        self.backend.connect('auth_failed', self.auth_failed_callback)
-        self.backend.connect('io_error', self.io_error_callback)
 
     def print_button_clicked_callback(self, widget):
         if not self.backend == None:
@@ -139,7 +137,8 @@ class MainWin(gtk.Window):
             resp = gtk.RESPONSE_OK
 
             if not (filename.lower().endswith("pdf") |
-                    filename.lower().endswith("ps")):
+                    filename.lower().endswith("ps")  |
+                    filename.lower().endswith("txt")):
                 dialog = MessageDialog("Attenzione!",
                                        "Il file che hai scelto di stampare\n\
 non sembra essere un file <b>PS</b>,\n\
@@ -164,7 +163,7 @@ Se vuoi continuare premi OK")
                                             sides = sides)
                 except PrintingError, e:
                     # Comunichiamo il fallimento
-                    dialog = ErrorDialog("Errore di stampa",
+                    dialog = ErrorDialog("<b>Errore di stampa</b>",
                                          "Il seguente errore si è verificato durante la stampa: %s." % e)
                     dialog.run()
                     dialog.destroy()
@@ -178,25 +177,6 @@ Se vuoi continuare premi OK")
             self.debug( "Sembra che non ci sia un backend attaccato\
  a questa interfaccia, quindi non faccio nulla")
 
-    def auth_failed_callback(self, obj):
-        """Questa funzione gestisce l'eventualità che utente
-        e password siano errati"""
-        self.debug("Autenticazione fallita")
-        dialog = ErrorDialog("Autenticazione Fallita",
-                             "Lo username e la password forniti non sono\n\
-corretti. L'autenticazione su ssh.dm.unipi.it\nnon è andata a buon fine.")
-        dialog.run()
-        dialog.destroy()
-
-    def io_error_callback(self, obj):
-        
-        self.debug("Errore di I/O")
-        dialog = ErrorDialog("Errore di I/O",
-                             "C'è stato un errore nella lettura o nella\n \
-trasmissione del file.")
-
-        dialog.run()
-        dialog.destroy()
     
            
 
