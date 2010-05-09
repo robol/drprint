@@ -1,4 +1,5 @@
 ## This library provides User Input fields
+# -*- coding: utf-8 -*-
 
 import gtk, pygtk, gobject, os
 
@@ -90,6 +91,18 @@ class PrintButton(gtk.Button):
     def __init__(self, parent=None):
         
         gtk.Button.__init__(self, "Stampa")
+
+    def set_state(self, state):
+        if state is "idle":
+            self.set_label ("Stampa")
+        elif state is "printing":
+            self.set_label ("Stampa in corso")
+            # Questa è una sporca soluzione per fare in modo che
+            # il cambio di stato si veda.
+            while gtk.events_pending():
+                gtk.main_iteration (False)
+        else:
+            raise RuntimeError('Invalid state %s' % state)
 
 
 class SelectFileWidget(gtk.HBox):

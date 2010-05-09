@@ -1,3 +1,15 @@
+drprint (0.8-3) lucid; urgency=low
+
+  * Il pulsante Stampa cambia etichetta durante la stampa
+
+ -- Leonardo Robol <leonardo@debby>  Sun, 09 May 2010 11:57:58 +0200
+
+drprint (0.8-2) karmic; urgency=low
+
+  * Corrette incongruenze nella gestione degli errori
+
+ -- Leonardo Robol <leonardo@debby>  Wed, 10 Feb 2010 11:48:13 +0100
+
 drprint (0.8-1) karmic; urgency=low
 
   * Cambiato il backend. Ora non manda più il file in pipe,

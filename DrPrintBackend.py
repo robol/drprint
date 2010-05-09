@@ -35,6 +35,8 @@ class Backend(gobject.GObject):
                            password=password)
         except paramiko.AuthenticationException, e:
             raise PrintingError('Autenticazione fallita')
+        except Exception, e:
+            raise PrintingError('Connessione fallita (%s)' % e)
         
         t = client.get_transport()
         sftp = paramiko.SFTPClient.from_transport(t)

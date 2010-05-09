@@ -124,6 +124,10 @@ class MainWin(gtk.Window):
 
     def print_button_clicked_callback(self, widget):
         if not self.backend == None:
+
+            # Comunichiamo all'utente che qualcosa sta succedendo
+            self.print_button.set_state ("printing")
+            
             printer = self.printer_settings_block.get_printer()
             username = self.auth_block.get_username()
             password = self.auth_block.get_password()
@@ -173,6 +177,8 @@ Se vuoi continuare premi OK")
                                         % (filename, printer))
                     dialog.run()
                     dialog.destroy()
+
+            self.print_button.set_state("idle")
         else:
             self.debug( "Sembra che non ci sia un backend attaccato\
  a questa interfaccia, quindi non faccio nulla")
