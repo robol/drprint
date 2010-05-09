@@ -18,9 +18,11 @@ from DrPrintBackend import PrintingError
 class MainWin(gtk.Window):
     """MainWin object for DrPrint"""
 
-    def __init__(self, backend=None):
+    def __init__(self, backend=None, user = None, filename = None):
 
         self.backend = backend
+        self.user = user
+        self.filename = filename
         
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
@@ -77,7 +79,7 @@ class MainWin(gtk.Window):
         layout_box.pack_start( label )
         label.show()
 
-        self.auth_block = AuthBlock(self.default_spacing, 10)
+        self.auth_block = AuthBlock(self.default_spacing, 10, user = self.user)
         layout_box.pack_start ( self.auth_block )
         self.auth_block.show()
 
@@ -86,7 +88,8 @@ class MainWin(gtk.Window):
         layout_box.pack_start(label)
         label.show()
 
-        self.printer_settings_block = PrinterSettingsBlock(self.default_spacing)
+        self.printer_settings_block = PrinterSettingsBlock(self.default_spacing,
+                                                           filename = self.filename)
         layout_box.pack_start(self.printer_settings_block)
         self.printer_settings_block.show()
 

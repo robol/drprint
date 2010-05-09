@@ -1,11 +1,23 @@
 #!/usr/bin/env python
 
 import gtk, pygtk
+from optparse import OptionParser
 from DrPrintGui.MainWin import MainWin
 from DrPrintBackend import Backend
 
 if __name__ == "__main__":
 
+   ## Analyze comand line options
+   usage = "usage: %prog [options] [file]"
+   parser = OptionParser(usage=usage)
+   parser.add_option("-u", "--user", dest="user",default=None,
+                     help = "set username to use for the ssh connection",
+                     metavar="user")
+   
+   (option, args) = parser.parse_args()
+
+   if len(args) > 0:
+      filename = args[0]
 
    ## Load the Backend that will perform
    ## all the hard work without being seen
@@ -18,7 +30,9 @@ if __name__ == "__main__":
    ## with her .. ( find a good word )
    ## P.S.: We give her a backend, without
    ## it she will be useless. 
-   mw = MainWin(backend)
+   mw = MainWin(backend = backend,
+                user = option.user,
+                filename = filename)
 
    ## Show all :)
    mw.show()

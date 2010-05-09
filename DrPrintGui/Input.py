@@ -32,11 +32,14 @@ class PaddingLeftWidget(gtk.Table):
 
 class UsernameField(gtk.Entry):
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, user = None):
         
         gtk.Entry.__init__(self)
 
-        self.set_text( os.getenv("USER") )
+        if user is None:
+            self.set_text( os.getenv("USER") )
+        else:
+            self.set_text(user)
 
 
 class PasswordField(gtk.Entry):
@@ -50,11 +53,11 @@ class PasswordField(gtk.Entry):
 
 class AuthBlock(gtk.HBox):
     
-    def __init__(self, default_spacing=5, left_padding=0):
+    def __init__(self, default_spacing=5, left_padding=0, user = None):
         
         gtk.HBox.__init__(self)
 
-        self.user_field = UsernameField()
+        self.user_field = UsernameField(user = user)
         self.password_field = PasswordField()
         
         vbox1 = gtk.VBox()
@@ -107,11 +110,14 @@ class PrintButton(gtk.Button):
 
 class SelectFileWidget(gtk.HBox):
     
-    def __init__(self):
+    def __init__(self, filename = None):
         gtk.HBox.__init__(self)
         self.set_spacing (5)
 
         self.Filename = gtk.Entry()
+        if filename is not None:
+            self.Filename.set_text(filename)
+            
         self.Browser = gtk.Button("Sfoglia")
 
         self.Filename.set_tooltip_text("Se hai bisogno di stampare \
@@ -181,7 +187,7 @@ class PagePerPageComboBox(gtk.HBox):
 
 class PrinterSettingsBlock(gtk.HBox):
     
-    def __init__(self, default_spacing = 5, left_padding=0):
+    def __init__(self, default_spacing = 5, left_padding=0, filename = None):
          
         gtk.HBox.__init__(self)
         
@@ -202,7 +208,7 @@ class PrinterSettingsBlock(gtk.HBox):
         vbox1.pack_start( label )
         label.show()
 
-        self.select_file_widget = SelectFileWidget()
+        self.select_file_widget = SelectFileWidget(filename)
         vbox2.pack_start (self.select_file_widget)
         self.select_file_widget.show()
 
