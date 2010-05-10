@@ -18,6 +18,8 @@ if __name__ == "__main__":
 
    if len(args) > 0:
       filename = args[0]
+   else:
+      filename = None
 
    ## Load the Backend that will perform
    ## all the hard work without being seen
