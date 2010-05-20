@@ -1,3 +1,9 @@
+drprint (0.8-5) jaunty; urgency=low
+
+  * Corrette dipendenze. 
+
+ -- Leonardo Robol <robol@daphne.phc.unipi.it>  Thu, 20 May 2010 11:51:41 +0200
+
 drprint (0.8-4ubuntu1) lucid; urgency=low
 
   * Corretto baco nel getopt()

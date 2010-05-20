@@ -8,7 +8,7 @@ Homepage: http://poisson.phc.unipi.it/~robol/
 
 Package: drprint
 Architecture: all
-Depends: ${misc:Depends}
+Depends: python-paramiko, python-gtk2, python-gobject
 Description: Interfaccia GTK per stampare sulle stampanti di dm.unipi.it
  Interfaccia GTK che permette di mandare in stampa file
  ps e pdf sulle stampanti del dipartimento di matematica
