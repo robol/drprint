@@ -39,8 +39,8 @@ class UsernameField(gtk.Entry):
         if user is None:
             self.set_text( os.getenv("USER") )
         else:
-            self.set_text(user)
-
+            self.set_text(user)		
+	
 
 class PasswordField(gtk.Entry):
     
@@ -51,9 +51,26 @@ class PasswordField(gtk.Entry):
         self.set_text ("")
         self.set_visibility(False)
 
+class RemoteHostComboBox(gtk.HBox):
+
+    def __init__(self, default_hosts):
+
+        gtk.HBox.__init__(self)
+        self.combobox = gtk.combo_box_new_text()
+        for remote_host in default_hosts:
+            self.combobox.append_text(remote_host)
+            # Selezioniamo il primo host
+            self.combobox.set_active(0)
+            
+        self.pack_start(self.combobox)
+        self.combobox.show()
+    def get_remote_host(self):
+        return self.combobox.get_active_text()
+
 class AuthBlock(gtk.HBox):
     
-    def __init__(self, default_spacing=5, left_padding=0, user = None):
+    def __init__(self, default_spacing=5, left_padding=0, user = None,
+                 default_hosts = ['ssh.dm.unipi.it']):
         
         gtk.HBox.__init__(self)
 
@@ -63,6 +80,17 @@ class AuthBlock(gtk.HBox):
         vbox1 = gtk.VBox()
         vbox2 = gtk.VBox()
 
+        label = LeftAlignedLabel("Server SSH", 20)
+        vbox1.pack_start (label)
+        label.show ()
+		
+        if len(default_hosts) == 0:
+            raise IndexError('Not remote hosts specified. Aborting')
+
+        self.remote_host = RemoteHostComboBox(default_hosts)
+        vbox2.pack_start(self.remote_host)
+        self.remote_host.show()
+	
         label = LeftAlignedLabel("Utente", 20)
         vbox1.pack_start( label )
         label.show()
@@ -89,6 +117,9 @@ class AuthBlock(gtk.HBox):
     def get_password(self):
         return self.password_field.get_text()
 
+    def get_remote_host(self):
+        return self.remote_host.get_remote_host()
+
 class PrintButton(gtk.Button):
     
     def __init__(self, parent=None):
@@ -106,6 +137,21 @@ class PrintButton(gtk.Button):
                 gtk.main_iteration (False)
         else:
             raise RuntimeError('Invalid state %s' % state)
+
+class QueueButton(gtk.Button):
+
+    def __init__(self):
+        gtk.Button.__init__(self, "Visualizza coda")
+        
+    def set_state(self, state):
+        if state is "idle":
+            self.set_label("Visualizza coda")
+        else:
+            self.set_label("Recupero coda in corso...")
+            while gtk.events_pending():
+                gtk.main_iteration (False)
+            
+        
 
 
 class SelectFileWidget(gtk.HBox):
@@ -149,17 +195,14 @@ file .ps da selezionare qui")
             
 class PrinterComboBox(gtk.HBox):
     
-    def __init__(self):
+    def __init__(self, printers = []):
         
         gtk.HBox.__init__(self)
         self.combobox = gtk.combo_box_new_text()
-        self.combobox.append_text("cdc7")
-        self.combobox.append_text("cdcpt")
-        self.combobox.append_text("cdc8")
-        self.combobox.append_text("cdc4")
-        self.combobox.append_text("cdc9")
+        for printer in printers:
+            self.combobox.append_text(printer)
 
-        self.combobox.set_active(1)
+        self.combobox.set_active(0)
 
         self.pack_start( self.combobox )
         self.combobox.show()
@@ -187,7 +230,7 @@ class PagePerPageComboBox(gtk.HBox):
 
 class PrinterSettingsBlock(gtk.HBox):
     
-    def __init__(self, default_spacing = 5, left_padding=0, filename = None):
+    def __init__(self, default_spacing = 5, left_padding=0, filename = None, printers = []):
          
         gtk.HBox.__init__(self)
         
@@ -200,7 +243,7 @@ class PrinterSettingsBlock(gtk.HBox):
         vbox1.pack_start(label)
         label.show()
 
-        self.printer_chooser = PrinterComboBox()
+        self.printer_chooser = PrinterComboBox(printers = printers)
         vbox2.pack_start( self.printer_chooser )
         self.printer_chooser.show()
 

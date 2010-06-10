@@ -23,6 +23,28 @@ class ErrorDialog(Dialog):
         self.set_markup(error)
         self.format_secondary_markup(message)
 
+class QueueDialog(Dialog):
+
+    def __init__(self, jobs, printer):
+
+        Dialog.__init__(self,
+                        buttons = gtk.BUTTONS_OK,
+                        mtype = gtk.MESSAGE_INFO
+                        )
+
+        if len(jobs) == 0:
+            self.set_markup("Non ci sono lavori in coda su <b>%s</b>." % printer)
+        else:
+            self.set_markup("Ci sono %d lavori in coda su <b>%s</b>:" % (len(jobs), printer))
+
+        # Lista dei lavori
+        markup = ""
+        for job in jobs:
+            markup += "%d) <b>%s</b> sta stampando <b>%s</b>\n" % (job['position'], job['user'],
+                                                                   job['filename'])
+        self.format_secondary_markup (markup)
+                                 
+
 class InfoDialog(Dialog):
 
     def __init__(self, error, message):

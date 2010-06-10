@@ -11,8 +11,9 @@ import gtk, pygtk
 import os
 import sys
 
-from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, PageRangeBlock, OrientationSelect, SidesSelect
-from Dialogs import ErrorDialog, MessageDialog, InfoDialog
+from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, \
+     PageRangeBlock, OrientationSelect, SidesSelect, QueueButton
+from Dialogs import ErrorDialog, MessageDialog, InfoDialog, QueueDialog
 from DrPrintBackend import PrintingError
 
 class MainWin(gtk.Window):
@@ -75,11 +76,14 @@ class MainWin(gtk.Window):
 
         layout_box.pack_start(hbox, 20)
         
+        
         label = LeftAlignedLabel("<b>Autenticazione (sui computer dell'Aula 4)</b>")
         layout_box.pack_start( label )
         label.show()
 
-        self.auth_block = AuthBlock(self.default_spacing, 10, user = self.user)
+        hosts = ['ssh.dm.unipi.it', 'ssh1.dm.unipi.it', 'ssh2.dm.unipi.it']
+        self.auth_block = AuthBlock(self.default_spacing, 10, user = self.user,
+                                    default_hosts = hosts)
         layout_box.pack_start ( self.auth_block )
         self.auth_block.show()
 
@@ -88,8 +92,18 @@ class MainWin(gtk.Window):
         layout_box.pack_start(label)
         label.show()
 
+        # Piano terra e secondo piano
+        printers = ['cdcpt', 'cdcpp']
+
+        # Le stampanti numerate
+        printers.extend(map(lambda x : "cdc"+str(x), range(1,10)))
+
+        # Togliamo la cdc2 che sembra non esistere
+        printers.remove("cdc2")
+        
         self.printer_settings_block = PrinterSettingsBlock(self.default_spacing,
-                                                           filename = self.filename)
+                                                           filename = self.filename,
+                                                           printers = printers)
         layout_box.pack_start(self.printer_settings_block)
         self.printer_settings_block.show()
 
@@ -113,9 +127,19 @@ class MainWin(gtk.Window):
         layout_box.pack_start(self.sides_select)
         self.sides_select.show()
 
+        # Bottoni finali, omogenei :)
+        hbox = gtk.HBox(True)
+        
+        self.queue_button = QueueButton()
+        hbox.pack_start(self.queue_button)
+        self.queue_button.show()
+
         self.print_button = PrintButton()
-        layout_box.pack_start(self.print_button)
+        hbox.pack_start(self.print_button)
         self.print_button.show()
+        
+        layout_box.pack_start(hbox)
+        hbox.show ()
 
        
         self.add (layout_box)
@@ -123,7 +147,28 @@ class MainWin(gtk.Window):
 
 
     def connect_all(self):
+        self.queue_button.connect('clicked', self.queue_button_clicked_callback)
         self.print_button.connect('clicked', self.print_button_clicked_callback)
+
+    def queue_button_clicked_callback(self, widget):
+        self.queue_button.set_state("running")
+        printer = self.printer_settings_block.get_printer()
+        username = self.auth_block.get_username()
+        password = self.auth_block.get_password()
+        remote_host = self.auth_block.get_remote_host()
+        try:
+            jobs = self.backend.get_queue(printer, remote_host, username, password)
+        except RuntimeError, e:
+            dialog = ErrorDialog("<b>Errore di connessione</b>",
+                                 "Il seguente errore si è verificato durante il recupero della coda: %s" % e)
+            resp = dialog.run()
+            dialog.destroy()
+        self.queue_button.set_state("idle")
+        qd = QueueDialog(jobs, printer)
+        resp = qd.run()
+        qd.destroy()
+        
+        
 
     def print_button_clicked_callback(self, widget):
         if not self.backend == None:
@@ -140,6 +185,7 @@ class MainWin(gtk.Window):
             copies = self.printer_settings_block.get_copies()
             orientation = self.orientation_select.get_orientation()
             sides = self.sides_select.get_sides_select()
+            remote_host = self.auth_block.get_remote_host ()
 
             resp = gtk.RESPONSE_OK
 
@@ -167,7 +213,8 @@ Se vuoi continuare premi OK")
                                             page_range = page_range,
                                             copies = copies,
                                             orientation=orientation,
-                                            sides = sides)
+                                            sides = sides,
+                                            remote_host = remote_host)
                 except PrintingError, e:
                     # Comunichiamo il fallimento
                     dialog = ErrorDialog("<b>Errore di stampa</b>",

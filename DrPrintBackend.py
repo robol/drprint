@@ -1,7 +1,7 @@
 ## Some useful function to help DrPrint to
 # -*- coding: utf-8 -*-
 
-import paramiko, gobject, select, time
+import paramiko, gobject, select, time, re
 
 class PrintingError(Exception):
 
@@ -11,13 +11,51 @@ class PrintingError(Exception):
     def __str__(self):
         return repr(self.value)
 
+
 class Backend(gobject.GObject):
 
     def __init__(self):
         super(Backend, self).__init__()
 
+    def get_queue(self, printer, remote_host, username, password):
 
-    def send_print(self, printer, username, password, page_per_page, filename, page_range, copies, orientation, sides):
+        try:
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        except:
+           raise RuntimeError('Impossibile inizializzare paramiko')
+        
+        try:
+            client.connect(remote_host,
+                           port = 22,
+                           username = username,
+                           password = password)
+        except:
+            raise RuntimeError('Impossibile connettersi a %s' % remote_host)
+
+        stdin, stdout, stderr = client.exec_command("lpq -P%s" % printer)
+        output = stdout.read()
+
+        # Parse output
+        jobs = []
+        for line in re.findall(r"(\d+)\w*\s+(\w+)\s+(\d+)\s+(.+)\s+(\d+) bytes",
+                               output):
+            job = {
+                'position': int(line[0]),
+                'user': line[1],
+                'id': line[2],
+                'filename': line[3].strip(),
+                'size': line[4]
+                }
+            jobs.append(job)
+        return jobs
+        
+        
+
+
+    def send_print(self, printer, username, password, page_per_page,
+                   filename, page_range, copies, orientation, sides, remote_host):
+        
         # Get printer name
         print "Selected printer: %s" % printer
     
@@ -29,7 +67,7 @@ class Backend(gobject.GObject):
             raise PrintingError('Impossibili inizializzare paramiko')
 
         try:
-            client.connect('ssh.dm.unipi.it', 
+            client.connect(remote_host, 
                            port=22, 
                            username=username,
                            password=password)
