@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ## Some useful function to help DrPrint to
 # -*- coding: utf-8 -*-
 
@@ -18,8 +19,12 @@ class Backend(gobject.GObject):
         super(Backend, self).__init__()
 
     def get_queue(self, printer, remote_host, username, password):
+	"""
+	Obtain the queue of jobs on selected printer. It opens an SSH
+	connection to the server and parse lpq -Pprinter output
+	"""
 
-        try:
+	try:
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         except:

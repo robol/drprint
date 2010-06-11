@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ## This library provides User Input fields
 # -*- coding: utf-8 -*-
 
@@ -77,8 +78,8 @@ class AuthBlock(gtk.HBox):
         self.user_field = UsernameField(user = user)
         self.password_field = PasswordField()
         
-        vbox1 = gtk.VBox()
-        vbox2 = gtk.VBox()
+        vbox1 = gtk.VBox(False, default_spacing)
+        vbox2 = gtk.VBox(False, default_spacing)
 
         label = LeftAlignedLabel("Server SSH", 20)
         vbox1.pack_start (label)
