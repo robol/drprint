@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 ## Some useful function to help DrPrint to
-# -*- coding: utf-8 -*-
 
 import paramiko, gobject, select, time, re
 

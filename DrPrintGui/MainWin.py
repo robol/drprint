@@ -1,5 +1,5 @@
+# -*- coding: utf-8 -*-
 ## This library is part of DrPrintGui 
-#  -*- coding: utf-8 -*-
 ## This file provide the MainWin object,
 ## that is the main window of the DrPrint
 ## application
@@ -163,10 +163,15 @@ class MainWin(gtk.Window):
                                  "Il seguente errore si è verificato durante il recupero della coda: %s" % e)
             resp = dialog.run()
             dialog.destroy()
+            jobs = None
+          
+        # Se siamo riusciti a scucire qualche informazione la mostriamo,
+        # altrimenti no.
         self.queue_button.set_state("idle")
-        qd = QueueDialog(jobs, printer)
-        resp = qd.run()
-        qd.destroy()
+        if jobs:
+	  qd = QueueDialog(jobs, printer)
+	  resp = qd.run()
+	  qd.destroy()
         
         
 

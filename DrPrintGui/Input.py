@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 ## This library provides User Input fields
-# -*- coding: utf-8 -*-
 
 import gtk, pygtk, gobject, os
 
