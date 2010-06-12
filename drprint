@@ -22,17 +22,10 @@ if __name__ == "__main__":
    else:
       filename = None
 
-   ## Load the Backend that will perform
-   ## all the hard work without being seen
-   ## by the end user. That is -- the sad 
-   ## story of every backend.
+   # The backend doing network work.
    backend = Backend()
    
-   ## ...and then the main win! The one
-   ## that will try to attract end user
-   ## with her .. ( find a good word )
-   ## P.S.: We give her a backend, without
-   ## it she will be useless. 
+   # ...and the Gtk main window.
    mw = MainWin(backend = backend,
                 user = option.user,
                 filename = filename)
