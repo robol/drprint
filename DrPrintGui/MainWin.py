@@ -168,7 +168,7 @@ class MainWin(gtk.Window):
         # Se siamo riusciti a scucire qualche informazione la mostriamo,
         # altrimenti no.
         self.queue_button.set_state("idle")
-        if jobs:
+        if jobs is not None:
 	  qd = QueueDialog(jobs, printer)
 	  resp = qd.run()
 	  qd.destroy()

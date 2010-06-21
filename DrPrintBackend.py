@@ -40,8 +40,6 @@ class Backend(gobject.GObject):
         stdin, stdout, stderr = client.exec_command("lpq -P%s" % printer)
         output = stdout.read()
 
-        print output
-
         # Parse output
         jobs = []
         for line in re.findall(r"active\s+(\w+)\s+(\d+)\s+(.+)\s+(\d+) bytes", output):
