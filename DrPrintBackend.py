@@ -40,12 +40,25 @@ class Backend(gobject.GObject):
         stdin, stdout, stderr = client.exec_command("lpq -P%s" % printer)
         output = stdout.read()
 
+        print output
+
         # Parse output
         jobs = []
-        for line in re.findall(r"(\d+)\w*\s+(\w+)\s+(\d+)\s+(.+)\s+(\d+) bytes",
-                               output):
+        for line in re.findall(r"active\s+(\w+)\s+(\d+)\s+(.+)\s+(\d+) bytes", output):
             job = {
-                'position': int(line[0]),
+                'position': 1,
+                'user': line[0],
+                'id': line[1],
+                'filename': line[2],
+                'size': line[3],
+                }
+            jobs.append (job)
+        
+        for line in re.findall(r"(\d)\w*\s+(\w+)\s+(\d+)\s+(.+)\s+(\d+) bytes",
+                               output):
+            pos = int(line[0]) + 1
+            job = {
+                'position': pos,
                 'user': line[1],
                 'id': line[2],
                 'filename': line[3].strip(),
