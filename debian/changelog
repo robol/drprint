@@ -1,3 +1,9 @@
+drprint (0.9-0-rc4) lucid; urgency=low
+
+  * Nuova versione con altro baco corretto
+
+ -- Leonardo Robol <leonardo@debby>  Mon, 21 Jun 2010 10:55:16 +0200
+
 drprint (0.9-0-rc3) lucid; urgency=low
 
   * Corretto baco nella visualizzazione della coda di stampa. 
