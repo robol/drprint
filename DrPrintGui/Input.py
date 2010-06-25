@@ -111,6 +111,13 @@ class AuthBlock(gtk.HBox):
         vbox1.show()
         vbox2.show()
 
+        # If user is given give focus to password,
+        # otherwise give focus to username
+        if user is None:
+            self.user_field.grab_focus ()
+        else:
+            self.password_field.grab_focus ()
+
     def get_username(self):
         return self.user_field.get_text()
 
