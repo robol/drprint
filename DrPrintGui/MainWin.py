@@ -96,7 +96,7 @@ class MainWin(gtk.Window):
         printers = ['cdcpt', 'cdcpp']
 
         # Le stampanti numerate
-        printers.extend(map(lambda x : "cdc"+str(x), range(1,10)))
+        printers.extend(map(lambda x : "cdc"+str(x), range(1,12)))
 
         # Togliamo la cdc2 che sembra non esistere
         printers.remove("cdc2")
