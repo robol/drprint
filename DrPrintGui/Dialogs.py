@@ -1,4 +1,4 @@
-import gtk, pygtk
+import gtk, pygtk, gobject
 
 class Dialog(gtk.MessageDialog):
     
@@ -72,3 +72,48 @@ class MessageDialog(Dialog):
         self.format_secondary_markup(text)
 
     
+class ProgressDialog(gtk.Dialog):
+
+    __gsignals__ = {
+        'transfer-cancelled': (gobject.SIGNAL_RUN_LAST,
+                               gobject.TYPE_NONE, ())
+        }
+
+    def __init__(self, filename):
+
+        gtk.Dialog.__init__(self, 
+                            title = "Trasferimento file in corso...",
+                            buttons = None)
+        self.__progress_bar = gtk.ProgressBar()
+        self.__progress_bar.set_fraction(0)
+        self.set_border_width(5)
+
+        self.get_content_area().set_spacing(5)
+        
+        filename = filename.split("/")[-1]
+        text = "Trasferimento del file %s \n sul server remoto in corso..." % filename
+        label = gtk.Label(text)
+        self.get_content_area().pack_start(label, 5)
+        self.get_content_area().pack_start(self.__progress_bar, 5)
+        label.show()
+        self.__progress_bar.show()
+
+        cancel_button = gtk.Button("Annulla")
+        self.get_content_area().pack_start(cancel_button, 5)
+        cancel_button.show()
+
+        cancel_button.connect("clicked", self.cancel)
+
+    def cancel(self, widget):
+        self.emit('transfer-cancelled')
+        self.hide()
+
+    def set_fraction(self, fraction):
+        self.__progress_bar.set_fraction(fraction)
+        while gtk.events_pending():
+            gtk.main_iteration()
+
+    
+        
+        
+        

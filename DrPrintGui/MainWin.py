@@ -13,7 +13,7 @@ import sys
 
 from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, \
      PageRangeBlock, OrientationSelect, SidesSelect, QueueButton
-from Dialogs import ErrorDialog, MessageDialog, InfoDialog, QueueDialog
+from Dialogs import ErrorDialog, MessageDialog, InfoDialog, QueueDialog, ProgressDialog
 from DrPrintBackend import PrintingError
 
 class MainWin(gtk.Window):
@@ -27,7 +27,7 @@ class MainWin(gtk.Window):
         
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
-        self.set_title = "DrPrint 0.8"
+        self.set_title = "DrPrint 0.9"
         self.set_border_width(10)
 
         self.default_spacing = 5
@@ -210,7 +210,13 @@ Se vuoi continuare premi OK")
 
             if resp == gtk.RESPONSE_OK:
                 try:
-                    self.backend.send_print(printer = printer,
+                    progress_dialog = ProgressDialog(filename)
+                    self.backend.connect('transfer-started', lambda widget : progress_dialog.show())
+                    self.backend.connect('transfer-progress', 
+                                         lambda widget, a, b : progress_dialog.set_fraction(a * 1.0 / b))
+                    self.backend.connect('transfer-finished', lambda widget : progress_dialog.hide())
+                    progress_dialog.connect('transfer-cancelled', self.backend.cancel_transfer)
+                    result = self.backend.send_print(printer = printer,
                                             username = username,
                                             password = password,
                                             filename = filename,
@@ -227,11 +233,12 @@ Se vuoi continuare premi OK")
                     dialog.run()
                     dialog.destroy()
                 else:
-                    dialog = InfoDialog("Stampa effettuata",
-                                        "Il file %s è stato stampato correttamente sulla stampante <b>%s</b>."
-                                        % (filename, printer))
-                    dialog.run()
-                    dialog.destroy()
+                    if not result:
+                        dialog = InfoDialog("Stampa effettuata",
+                                            "Il file %s è stato stampato correttamente sulla stampante <b>%s</b>."
+                                            % (filename, printer))
+                        dialog.run()
+                        dialog.destroy()
 
             self.print_button.set_state("idle")
         else:

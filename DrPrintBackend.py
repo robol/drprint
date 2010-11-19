@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ## Some useful function to help DrPrint to
 
-import paramiko, gobject, select, time, re
+import paramiko, gobject, select, time, re, os
 
 class PrintingError(Exception):
 
@@ -14,8 +14,23 @@ class PrintingError(Exception):
 
 class Backend(gobject.GObject):
 
+    __gsignals__ = {
+        'transfer-progress': (gobject.SIGNAL_RUN_FIRST,
+                             gobject.TYPE_NONE,
+                             (gobject.TYPE_INT,
+                             gobject.TYPE_INT)),
+
+        'transfer-started': (gobject.SIGNAL_RUN_FIRST,
+                             gobject.TYPE_NONE,
+                             ()),
+
+        'transfer-finished': (gobject.SIGNAL_RUN_FIRST,
+                              gobject.TYPE_NONE,
+                              ()),
+        }
+
     def __init__(self):
-        super(Backend, self).__init__()
+        gobject.GObject.__init__(self)
 
     def get_queue(self, printer, remote_host, username, password):
 	"""
@@ -66,14 +81,14 @@ class Backend(gobject.GObject):
         return jobs
         
         
-
+    def cancel_transfer(self, widget):
+        self.__abort_transfer = True
 
     def send_print(self, printer, username, password, page_per_page,
                    filename, page_range, copies, orientation, sides, remote_host):
+
+        self.__abort_transfer = False
         
-        # Get printer name
-        print "Selected printer: %s" % printer
-    
         # Get connection
         try:
             client = paramiko.SSHClient()
@@ -94,8 +109,6 @@ class Backend(gobject.GObject):
         t = client.get_transport()
         sftp = paramiko.SFTPClient.from_transport(t)
         
-        print "Printing %s" % filename
-
         # Questo è inevitabile.. :)
         cmd = "lpr -P%s " % printer
 
@@ -130,24 +143,39 @@ class Backend(gobject.GObject):
             cmd = cmd + "%s" % cmd_opts + " /tmp/drprint_tmp_%s" % username
 
         try:
-            attr = sftp.put(filename, "/tmp/drprint_tmp_%s" % username)
+            self.emit('transfer-started')
+            buf_size = 4096 # 4 Kb
+            open_file = sftp.file("/tmp/drprint_tmp_%s" % username, "w")
+            bytes_read = 0
+            file_size = os.path.getsize(filename)
+            with open(filename, "r") as local_handle:
+                buf = None
+                while(buf != ""):
+                    buf = local_handle.read(buf_size)
+                    bytes_read = bytes_read + len(buf)
+                    if self.__abort_transfer:
+                        return self.__abort_transfer
+                    open_file.write(buf)
+                    self.emit('transfer-progress', bytes_read, file_size)
         except OSError:
             raise PrintingError('Errore nel trasferimento del file')
         else:
-            print "File trasferito, dimensione: %d bytes" % attr.st_size
+            pass
+        
+        self.emit('transfer-finished')
 
         # Apriamo la sessione.
         chan = t.open_session()
 
         # Diamo il comando sul canale
-        print "Eseguo %s" % cmd
         chan.exec_command(cmd)
-
         exit_status = chan.recv_exit_status()
+
         chan.close()
         if exit_status == 0:
             sftp.remove("/tmp/drprint_tmp_%s" % username)
 
-        print "Printed %s on %s (exit status = %d)" % (filename, printer, exit_status)
         if exit_status != 0:
             raise PrintingError('Il comando <b>lpr</b> non e\' andato a buon fine (Exit status = %d)' % exit_status)
+
+        return self.__abort_transfer
