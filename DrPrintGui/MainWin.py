@@ -27,7 +27,7 @@ class MainWin(gtk.Window):
         
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
-        self.set_title = "DrPrint 0.9"
+        self.set_title = "DrPrint 0.9.2"
         self.set_border_width(10)
 
         self.default_spacing = 5
