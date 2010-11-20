@@ -104,6 +104,8 @@ class ProgressDialog(gtk.Dialog):
 
         cancel_button.connect("clicked", self.cancel)
 
+        self.connect("destroy", self.cancel)
+
     def cancel(self, widget):
         self.emit('transfer-cancelled')
         self.hide()
