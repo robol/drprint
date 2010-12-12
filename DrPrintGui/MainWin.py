@@ -78,13 +78,13 @@ class MainWin(gtk.Window):
         
         
         label = LeftAlignedLabel("<b>Autenticazione (sui computer dell'Aula 4)</b>")
-        layout_box.pack_start( label )
+        layout_box.pack_start(label)
         label.show()
 
         hosts = ['ssh.dm.unipi.it', 'ssh1.dm.unipi.it', 'ssh2.dm.unipi.it']
         self.auth_block = AuthBlock(self.default_spacing, 10, user = self.user,
                                     default_hosts = hosts)
-        layout_box.pack_start ( self.auth_block )
+        layout_box.pack_start(self.auth_block)
         self.auth_block.show()
 
         # The PDF file loading and print settings
@@ -193,6 +193,14 @@ class MainWin(gtk.Window):
             remote_host = self.auth_block.get_remote_host ()
 
             resp = gtk.RESPONSE_OK
+            
+            # Proviamo a salvare l'utente utilizzato. Se non ci si riesce
+            # non ci lamentiamo troppo.
+            try:
+                with open(os.path.expanduser("~/.drprint"), "w") as handle:
+                    handle.write(username)
+            except OSError:
+                pass
 
             if not (filename.lower().endswith("pdf") |
                     filename.lower().endswith("ps")  |

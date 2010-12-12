@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import gtk, pygtk
+import gtk, pygtk, os
 from optparse import OptionParser
 from DrPrintGui.MainWin import MainWin
 from DrPrintBackend import Backend
@@ -25,9 +25,20 @@ if __name__ == "__main__":
    # The backend doing network work.
    backend = Backend()
    
+   # If no user is provided on command line, 
+   # check if a file .drprint exists in the
+   # home directory
+   configuration_file = os.path.expanduser("~/.drprint")
+   if option.user is None and os.path.exists(configuration_file):
+       with open(configuration_file, "r") as handle:
+           content = handle.read()
+       user = content.strip()
+   else:
+       user = option.user
+   
    # ...and the Gtk main window.
    mw = MainWin(backend = backend,
-                user = option.user,
+                user = user,
                 filename = filename)
 
    ## Show all :)
