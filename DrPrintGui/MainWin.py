@@ -26,6 +26,7 @@ class MainWin(gtk.Window):
         self.filename = filename
         
         gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
+        self.set_title("DrPrint")
 
         self.set_title = "DrPrint 1.0-rc1"
         self.set_border_width(10)
@@ -93,7 +94,7 @@ class MainWin(gtk.Window):
         label.show()
 
         # Piano terra e secondo piano
-        printers = ['cdcpt', 'cdcpp']
+        printers = ['cdcpt@printserver', 'cdcpp@printserver']
 
         # Le stampanti numerate
         printers.extend(map(lambda x : "cdc"+str(x), range(1,12)))

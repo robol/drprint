@@ -38,6 +38,8 @@ class Backend(gobject.GObject):
 	connection to the server and parse lpq -Pprinter output
 	"""
 
+        host, printer = self.split_name(printer)
+
 	try:
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -52,7 +54,7 @@ class Backend(gobject.GObject):
         except:
             raise RuntimeError('Impossibile connettersi a %s' % remote_host)
 
-        stdin, stdout, stderr = client.exec_command("lpq -P%s" % printer)
+        stdin, stdout, stderr = client.exec_command("lpq -h %s -P%s" % (host, printer))
         output = stdout.read()
 
         # Parse output
@@ -84,11 +86,23 @@ class Backend(gobject.GObject):
     def cancel_transfer(self, widget):
         self.__abort_transfer = True
 
+    def split_name(self, printer):
+        host = "lasker.dm.unipi.it"
+        if "@" in printer:
+            pos = printer.index("@")
+            host = printer[pos+1:]
+            printer = printer[:pos]
+        else:
+            printer = printer
+
+        return host, printer
+
     def send_print(self, printer, username, password, page_per_page,
                    filename, page_range, copies, orientation, sides, remote_host):
 
         self.__abort_transfer = False
-        
+        host, printer = self.split_name(printer)
+
         # Get connection
         try:
             client = paramiko.SSHClient()
@@ -121,7 +135,7 @@ class Backend(gobject.GObject):
             cmd = cmd + "-# %s " % copies
 
 
-        cmd_opts = ""
+        cmd_opts = " -H %s " % host
 
         ## Pagine logiche per pagine
         if not page_per_page == 1:
