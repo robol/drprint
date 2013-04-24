@@ -1,27 +1,31 @@
 # -*- coding: utf-8 -*-
 ## This library provides User Input fields
 
-import gtk, pygtk, gobject, os
+import os
+from gi.repository import Gtk, GObject
 
-class LeftAlignedLabel(gtk.Alignment):
+class LeftAlignedLabel(Gtk.Alignment):
     
     def __init__(self, markup, left_padding=0):
         
-        gtk.Alignment.__init__(self, 0,0.5,0,0)
+        Gtk.Alignment.__init__(self)
+
+	self.set_halign(0)
+	self.set_valign(0.5)
         
-        label = gtk.Label()
+        label = Gtk.Label()
         label.set_markup(markup)
         plw = PaddingLeftWidget(label, left_padding)
 
         self.add(plw)
         plw.show()
 
-class PaddingLeftWidget(gtk.Table):
+class PaddingLeftWidget(Gtk.Table):
     
     def __init__(self, widget, padding_left):
         
-        gtk.Table.__init__(self, 1, 2, False)
-        label = gtk.Label()
+        Gtk.Table.__init__(self, 1, 2, False)
+        label = Gtk.Label()
         self.set_col_spacing(0, padding_left)
         self.attach(label, 0,1,0,1, False, False)
         self.attach(widget, 1,2,0,1, False, False)
@@ -30,11 +34,11 @@ class PaddingLeftWidget(gtk.Table):
         widget.show()
         
 
-class UsernameField(gtk.Entry):
+class UsernameField(Gtk.Entry):
     
     def __init__(self, parent=None, user = None):
         
-        gtk.Entry.__init__(self)
+        Gtk.Entry.__init__(self)
 
         if user is None:
             self.set_text( os.getenv("USER") )
@@ -42,71 +46,71 @@ class UsernameField(gtk.Entry):
             self.set_text(user)		
 	
 
-class PasswordField(gtk.Entry):
+class PasswordField(Gtk.Entry):
     
     def __init__(self, parent=None):
         
-        gtk.Entry.__init__(self)
+        Gtk.Entry.__init__(self)
 
         self.set_text ("")
         self.set_visibility(False)
 
-class RemoteHostComboBox(gtk.HBox):
+class RemoteHostComboBox(Gtk.HBox):
 
     def __init__(self, default_hosts):
 
-        gtk.HBox.__init__(self)
-        self.combobox = gtk.combo_box_new_text()
+        Gtk.HBox.__init__(self)
+        self.combobox = Gtk.ComboBoxText()
         for remote_host in default_hosts:
             self.combobox.append_text(remote_host)
             # Selezioniamo il primo host
             self.combobox.set_active(0)
             
-        self.pack_start(self.combobox)
+        self.pack_start(self.combobox, True, True, 0)
         self.combobox.show()
     def get_remote_host(self):
         return self.combobox.get_active_text()
 
-class AuthBlock(gtk.HBox):
+class AuthBlock(Gtk.HBox):
     
     def __init__(self, default_spacing=5, left_padding=0, user = None,
                  default_hosts = ['ssh.dm.unipi.it']):
         
-        gtk.HBox.__init__(self)
+        Gtk.HBox.__init__(self)
 
         self.user_field = UsernameField(user = user)
         self.password_field = PasswordField()
         
-        vbox1 = gtk.VBox(False, default_spacing)
-        vbox2 = gtk.VBox(False, default_spacing)
+        vbox1 = Gtk.VBox(False, default_spacing)
+        vbox2 = Gtk.VBox(False, default_spacing)
 
         label = LeftAlignedLabel("Server SSH", 20)
-        vbox1.pack_start (label)
+        vbox1.pack_start (label, True, True, 0)
         label.show ()
 		
         if len(default_hosts) == 0:
             raise IndexError('Not remote hosts specified. Aborting')
 
         self.remote_host = RemoteHostComboBox(default_hosts)
-        vbox2.pack_start(self.remote_host)
+        vbox2.pack_start(self.remote_host, True, True, 0)
         self.remote_host.show()
 	
         label = LeftAlignedLabel("Utente", 20)
-        vbox1.pack_start( label )
+        vbox1.pack_start( label, True, True, 0 )
         label.show()
 
         label = LeftAlignedLabel("Password", 20)
-        vbox1.pack_start( label )
+        vbox1.pack_start( label, True, True, 0 )
         label.show()
 
-        vbox2.pack_start(self.user_field)
-        vbox2.pack_start(self.password_field)
+        vbox2.pack_start(self.user_field, True, True, 0)
+        vbox2.pack_start(self.password_field, True, True, 0)
 
         self.user_field.show()
         self.password_field.show()
 
-        self.pack_start(vbox1)
-        self.pack_start(vbox2)
+        self.pack_start(vbox1, True, True, 0)
+        self.pack_start(vbox2, True, True, 0)
 
         vbox1.show()
         vbox2.show()
@@ -127,11 +131,11 @@ class AuthBlock(gtk.HBox):
     def get_remote_host(self):
         return self.remote_host.get_remote_host()
 
-class PrintButton(gtk.Button):
+class PrintButton(Gtk.Button):
     
     def __init__(self, parent=None):
         
-        gtk.Button.__init__(self, "Stampa")
+        Gtk.Button.__init__(self, "Stampa")
 
     def set_state(self, state):
         if state is "idle":
@@ -140,38 +144,38 @@ class PrintButton(gtk.Button):
             self.set_label ("Stampa in corso")
             # Questa è una sporca soluzione per fare in modo che
             # il cambio di stato si veda.
-            while gtk.events_pending():
-                gtk.main_iteration (False)
+            while Gtk.events_pending():
+                Gtk.main_iteration ()
         else:
             raise RuntimeError('Invalid state %s' % state)
 
-class QueueButton(gtk.Button):
+class QueueButton(Gtk.Button):
 
     def __init__(self):
-        gtk.Button.__init__(self, "Visualizza coda")
+        Gtk.Button.__init__(self, "Visualizza coda")
         
     def set_state(self, state):
         if state is "idle":
             self.set_label("Visualizza coda")
         else:
             self.set_label("Recupero coda in corso...")
-            while gtk.events_pending():
-                gtk.main_iteration (False)
+            while Gtk.events_pending():
+                Gtk.main_iteration ()
             
         
 
 
-class SelectFileWidget(gtk.HBox):
+class SelectFileWidget(Gtk.HBox):
     
     def __init__(self, filename = None):
-        gtk.HBox.__init__(self)
+        Gtk.HBox.__init__(self)
         self.set_spacing (5)
 
-        self.Filename = gtk.Entry()
+        self.Filename = Gtk.Entry()
         if filename is not None:
             self.Filename.set_text(filename)
             
-        self.Browser = gtk.Button("Sfoglia")
+        self.Browser = Gtk.Button("Sfoglia")
 
         self.Filename.set_tooltip_text("Se hai bisogno di stampare \
 da un programma clicca File -> Stampa -> Stampa su file e crea un \
@@ -179,20 +183,26 @@ file .ps da selezionare qui")
 
         self.Browser.connect('clicked', self.SelectFile)
 
-        self.pack_start(self.Filename, 1)
-        self.pack_start(self.Browser, 1)
+        self.pack_start(self.Filename, True, True, 0)
+        self.pack_start(self.Browser, True, True, 0)
         self.Filename.show()
         self.Browser.show()
 
     def SelectFile(self, window):
+
+	filename = self.Filename.get_text()
         
-        chooser = gtk.FileChooserDialog(
+        chooser = Gtk.FileChooserDialog(
             title = "Seleziona file da stampare",
             parent = None,
-            action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK) )
-        if chooser.run() == gtk.RESPONSE_OK:
+            action=Gtk.FileChooserAction.OPEN,
+            buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK) )
+        if chooser.run() == Gtk.ResponseType.OK:
             self.Filename.set_text(chooser.get_filename())
+
+
+	if filename != "":
+		chooser.set_filename(filename)
         
         chooser.destroy()
 
@@ -200,86 +210,86 @@ file .ps da selezionare qui")
         return self.Filename.get_text()
 
             
-class PrinterComboBox(gtk.HBox):
+class PrinterComboBox(Gtk.HBox):
     
     def __init__(self, printers = []):
         
-        gtk.HBox.__init__(self)
-        self.combobox = gtk.combo_box_new_text()
+        Gtk.HBox.__init__(self)
+        self.combobox = Gtk.ComboBoxText()
         for printer in printers:
             self.combobox.append_text(printer)
 
         self.combobox.set_active(0)
 
-        self.pack_start( self.combobox )
+        self.pack_start( self.combobox, True, True, 0 )
         self.combobox.show()
 
     def get_printer(self):
         return self.combobox.get_active_text()
 
 
-class PagePerPageComboBox(gtk.HBox):
+class PagePerPageComboBox(Gtk.HBox):
     
     def __init__(self):
-        gtk.HBox.__init__(self)
-        self.combobox = gtk.combo_box_new_text()
+        Gtk.HBox.__init__(self)
+        self.combobox = Gtk.ComboBoxText()
         self.combobox.append_text("1")
         self.combobox.append_text("2")
         self.combobox.append_text("4")
 
         self.combobox.set_active(0)
 
-        self.pack_start( self.combobox )
+        self.pack_start( self.combobox, True, True, 0 )
         self.combobox.show()
 
     def get_page_per_page(self):
         return self.combobox.get_active_text()
 
-class PrinterSettingsBlock(gtk.HBox):
+class PrinterSettingsBlock(Gtk.HBox):
     
     def __init__(self, default_spacing = 5, left_padding=0, filename = None, printers = []):
          
-        gtk.HBox.__init__(self)
+        Gtk.HBox.__init__(self)
         
-        vbox1 = gtk.VBox(False, default_spacing)
-        vbox2 = gtk.VBox(False, default_spacing)
+        vbox1 = Gtk.VBox(False, default_spacing)
+        vbox2 = Gtk.VBox(False, default_spacing)
 
         self.set_spacing(default_spacing)
 
         label = LeftAlignedLabel("Stampante", 20)
-        vbox1.pack_start(label)
+        vbox1.pack_start(label, True, True, 0)
         label.show()
 
         self.printer_chooser = PrinterComboBox(printers = printers)
-        vbox2.pack_start( self.printer_chooser )
+        vbox2.pack_start( self.printer_chooser, True, True, 0 )
         self.printer_chooser.show()
 
         label = LeftAlignedLabel("File", 20)
-        vbox1.pack_start( label )
+        vbox1.pack_start( label, True, True, 0 )
         label.show()
 
         self.select_file_widget = SelectFileWidget(filename)
-        vbox2.pack_start (self.select_file_widget)
+        vbox2.pack_start (self.select_file_widget, True, True, 0)
         self.select_file_widget.show()
 
         label = LeftAlignedLabel("Pagine per foglio", 20)
-        vbox1.pack_start(label)
+        vbox1.pack_start(label,True, True, 0)
         label.show()
         
         self.page_per_page = PagePerPageComboBox()
-        vbox2.pack_start(self.page_per_page)
+        vbox2.pack_start(self.page_per_page, True, True, 0)
         self.page_per_page.show()
 
         label = LeftAlignedLabel("Numero di copie", 20)
-        vbox1.pack_start(label)
+        vbox1.pack_start(label, True, True, 0)
         label.show()
 
         self.copies = CopiesField()
-        vbox2.pack_start(self.copies)
+        vbox2.pack_start(self.copies, True, True, 0)
         self.copies.show()
 
-        self.pack_start(vbox1)
-        self.pack_start(vbox2)
+        self.pack_start(vbox1, True, True, 0)
+        self.pack_start(vbox2, True, True, 0)
 
         vbox1.show()
         vbox2.show()
@@ -298,33 +308,32 @@ class PrinterSettingsBlock(gtk.HBox):
 
 
 
-class PageRangeBlock(gtk.VBox):
+class PageRangeBlock(Gtk.VBox):
     
     def __init__(self):
         
-        gtk.VBox.__init__(self)
+        Gtk.Box.__init__(self, orientation = Gtk.Orientation.VERTICAL)
 
-        self.check_button = gtk.CheckButton("Stampa solo una parte del documento",
-                                       True)
+        self.check_button = Gtk.CheckButton(label = "Stampa solo una parte del documento")
 
         self.check_button.set_active(False)
 
         self.check_button.connect('clicked', self.check_button_callback)
 
-        self.pack_start(self.check_button)
+        self.pack_start(self.check_button, True, True, 0)
         self.check_button.show()
 
-        self.hbox = gtk.HBox()
+        self.hbox = Gtk.Box(orientation = Gtk.Orientation.HORIZONTAL)
         
-        self.range_field = gtk.Entry()
+        self.range_field = Gtk.Entry()
         self.range_field.set_tooltip_text("Indicare pagine e/o intervalli separati da virgole, ad esempio \"1,3-10,12,13,15-17\"")
 
         label = LeftAlignedLabel("Range di pagine", 20)
-        self.hbox.pack_start(label)
-        self.hbox.pack_start(self.range_field)
+        self.hbox.pack_start(label, True, True, 0)
+        self.hbox.pack_start(self.range_field, True, True, 0)
         label.show()
 
-        self.pack_start(self.hbox)
+        self.pack_start(self.hbox, True, True, 0)
 
         self.range_field.show()
 
@@ -347,11 +356,11 @@ class PageRangeBlock(gtk.VBox):
         return self.range_field.get_text()
 
 
-class CopiesField(gtk.SpinButton):
+class CopiesField(Gtk.SpinButton):
 
     def __init__(self):
         
-        gtk.SpinButton.__init__(self)
+        Gtk.SpinButton.__init__(self)
         self.set_digits(0)
         self.set_increments(1,10)
         self.set_range(0,999)
@@ -362,27 +371,25 @@ class CopiesField(gtk.SpinButton):
 
 
 
-class OrientationSelect(gtk.HBox):
+class OrientationSelect(Gtk.HBox):
     
     def __init__(self):
         
-        gtk.HBox.__init__(self)
+        Gtk.HBox.__init__(self)
         
         # Un etichetta per capire a cosa servono questi radio button
         label = LeftAlignedLabel("Orientamento", 20)
-        self.pack_start( label )
+        self.pack_start( label, True, True, 0 )
         label.show()
         
         # I radio button :)
-        self.landscape = gtk.RadioButton(None,
-                                      "Orizzontale",
-                                      True)
+        self.landscape = Gtk.RadioButton.new_with_label_from_widget (None,
+                                                                     "Orizzontale")
 
-        self.portrait  = gtk.RadioButton(self.landscape,
-                                      "Verticale",
-                                      True)
-        self.pack_start(self.landscape)
-        self.pack_start(self.portrait)
+        self.portrait  = Gtk.RadioButton.new_with_label_from_widget (self.landscape,
+                                                                     "Verticale")
+        self.pack_start(self.landscape, True, True, 0)
+        self.pack_start(self.portrait, True, True, 0)
 
         self.landscape.show ()
         self.portrait.show  ()
@@ -400,27 +407,27 @@ class OrientationSelect(gtk.HBox):
         ## Questo non dovrebbe succedere
         return None
 
-class SidesSelect(gtk.VBox):
+class SidesSelect(Gtk.VBox):
 
     def __init__(self):
         
-        gtk.VBox.__init__(self)
+        Gtk.VBox.__init__(self)
 
-        self.one_sided = gtk.RadioButton(None,
-                                         "Solo fronte",
-                                         True)
-        self.two_sided_short_edge = gtk.RadioButton(self.one_sided,
-                                     "Fronte retro sul lato corto",
-                                     True)
-        self.two_sided_long_edge = gtk.RadioButton(self.one_sided,
-                                    "Fronte retro sul lato lungo",
-                                    True)
+        self.one_sided = Gtk.RadioButton.new_with_label_from_widget (None,
+                                                                     "Solo fronte")
+        self.two_sided_short_edge = Gtk.RadioButton.new_with_label_from_widget (
+            self.one_sided,
+            "Fronte retro sul lato corto")
+
+        self.two_sided_long_edge = Gtk.RadioButton.new_with_label_from_widget (
+             self.one_sided,
+             "Fronte retro sul lato lungo")
 
         for widget in (self.one_sided,
                        self.two_sided_short_edge,
                        self.two_sided_long_edge) :
             a = PaddingLeftWidget(widget, 20)
-            self.pack_start(a)
+            self.pack_start(a, True, True, 0)
             a.show()
 
         self.two_sided_long_edge.set_active(True)

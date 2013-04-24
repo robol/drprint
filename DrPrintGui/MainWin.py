@@ -7,7 +7,7 @@
 
 __author__ = 'Leonardo Robol <leo@robol.it>'
 
-import gtk, pygtk
+from gi.repository import Gtk
 import os
 import sys
 
@@ -16,7 +16,7 @@ from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel
 from Dialogs import ErrorDialog, MessageDialog, InfoDialog, QueueDialog, ProgressDialog
 from DrPrintBackend import PrintingError
 
-class MainWin(gtk.Window):
+class MainWin(Gtk.Window):
     """MainWin object for DrPrint"""
 
     def __init__(self, backend=None, user = None, filename = None):
@@ -25,7 +25,7 @@ class MainWin(gtk.Window):
         self.user = user
         self.filename = filename
         
-        gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
+        Gtk.Window.__init__(self, Gtk.WindowType.TOPLEVEL)
         self.set_title("DrPrint")
 
         self.set_title = "DrPrint 1.0-rc1"
@@ -33,7 +33,7 @@ class MainWin(gtk.Window):
 
         self.default_spacing = 5
 
-        self.connect('destroy' , gtk.main_quit)
+        self.connect('destroy' , Gtk.main_quit)
 
         self.build()
 
@@ -44,7 +44,7 @@ class MainWin(gtk.Window):
         from DrPrintGui"""
 
         # The main Layout VBox
-        layout_box = gtk.VBox()
+        layout_box = Gtk.VBox()
         layout_box.set_spacing( self.default_spacing )
 
         # Inseriamo l'immagine di Dr Print
@@ -57,40 +57,40 @@ class MainWin(gtk.Window):
                 os.stat(image_file)
             except OSError:
                 image_file = "drprint_gui.png"
-        drprint_img = gtk.image_new_from_file(image_file)
+        drprint_img = Gtk.Image.new_from_file(image_file)
 
         # Qualche istruzinoe preliminare
-        label = gtk.Label()
+        label = Gtk.Label()
         label.set_markup("<b>Come usare questo programma:</b>\n\
 <b>1)</b> Inserire nome utente e password \n<b>2)</b> Scegliere il file da stampare e la\
  stampante \n<b>3)</b> Premere il tasto stampa")
 
-        hbox = gtk.HBox();
+        hbox = Gtk.HBox();
         hbox.show()
         hbox.set_spacing(self.default_spacing)
 
-        hbox.pack_start(drprint_img)
+        hbox.pack_start(drprint_img, True, True, 0)
         drprint_img.show()
 
-        hbox.pack_start( label )
+        hbox.pack_start( label, True, True, 0 )
         label.show()
 
-        layout_box.pack_start(hbox, 20)
+        layout_box.pack_start(hbox, False, True, 6)
         
         
         label = LeftAlignedLabel("<b>Autenticazione (sui computer dell'Aula 4)</b>")
-        layout_box.pack_start(label)
+        layout_box.pack_start(label, True, True, 0)
         label.show()
 
         hosts = ['ssh.dm.unipi.it', 'ssh1.dm.unipi.it', 'ssh2.dm.unipi.it']
         self.auth_block = AuthBlock(self.default_spacing, 10, user = self.user,
                                     default_hosts = hosts)
-        layout_box.pack_start(self.auth_block)
+        layout_box.pack_start(self.auth_block, True, True, 0)
         self.auth_block.show()
 
         # The PDF file loading and print settings
         label = LeftAlignedLabel("<b>Configurazione stampante</b>")
-        layout_box.pack_start(label)
+        layout_box.pack_start(label, True, True, 0)
         label.show()
 
         # Piano terra e secondo piano
@@ -105,41 +105,41 @@ class MainWin(gtk.Window):
         self.printer_settings_block = PrinterSettingsBlock(self.default_spacing,
                                                            filename = self.filename,
                                                            printers = printers)
-        layout_box.pack_start(self.printer_settings_block)
+        layout_box.pack_start(self.printer_settings_block, True, True, 0)
         self.printer_settings_block.show()
 
         self.orientation_select = OrientationSelect()
-        layout_box.pack_start(self.orientation_select)
+        layout_box.pack_start(self.orientation_select, True, True, 0)
         self.orientation_select.show()
 
         label = LeftAlignedLabel("<b>Configurazione Avanzata</b>")
-        layout_box.pack_start(label)
+        layout_box.pack_start(label, True, True, 0)
         label.show()
 
         self.page_range_block = PageRangeBlock()
-        layout_box.pack_start(self.page_range_block)
+        layout_box.pack_start(self.page_range_block, True, True, 0)
         self.page_range_block.show()
         
         label = LeftAlignedLabel( "<b>Fronte retro</b>" )
-        layout_box.pack_start(label)
+        layout_box.pack_start(label, True, True, 0)
         label.show()
 
         self.sides_select = SidesSelect()
-        layout_box.pack_start(self.sides_select)
+        layout_box.pack_start(self.sides_select, True, True, 0)
         self.sides_select.show()
 
         # Bottoni finali, omogenei :)
-        hbox = gtk.HBox(True)
+        hbox = Gtk.HBox(True)
         
         self.queue_button = QueueButton()
-        hbox.pack_start(self.queue_button)
+        hbox.pack_start(self.queue_button, True, True, 0)
         self.queue_button.show()
 
         self.print_button = PrintButton()
-        hbox.pack_start(self.print_button)
+        hbox.pack_start(self.print_button, True, True, 0)
         self.print_button.show()
         
-        layout_box.pack_start(hbox)
+        layout_box.pack_start(hbox, True, True, 0)
         hbox.show ()
 
        
@@ -193,7 +193,7 @@ class MainWin(gtk.Window):
             sides = self.sides_select.get_sides_select()
             remote_host = self.auth_block.get_remote_host ()
 
-            resp = gtk.RESPONSE_OK
+            resp = Gtk.ResponseType.OK
             
             # Proviamo a salvare l'utente utilizzato. Se non ci si riesce
             # non ci lamentiamo troppo.
@@ -217,7 +217,7 @@ Se vuoi continuare premi OK")
                 dialog.destroy()
                 
 
-            if resp == gtk.RESPONSE_OK:
+            if resp == Gtk.ResponseType.OK:
                 try:
                     progress_dialog = ProgressDialog(filename)
                     self.backend.connect('transfer-started', lambda widget : progress_dialog.show())

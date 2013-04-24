@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 ## Some useful function to help DrPrint to
 
-import paramiko, gobject, select, time, re, os
+import paramiko, select, time, re, os
+from gi.repository import GObject
+
+import logging
+
+FORMAT = '%(asctime)-15s %(message)s'
+logging.basicConfig(format = FORMAT, level = logging.INFO)
 
 class PrintingError(Exception):
 
@@ -12,25 +18,25 @@ class PrintingError(Exception):
         return repr(self.value)
 
 
-class Backend(gobject.GObject):
+class Backend(GObject.GObject):
 
     __gsignals__ = {
-        'transfer-progress': (gobject.SIGNAL_RUN_FIRST,
-                             gobject.TYPE_NONE,
-                             (gobject.TYPE_INT,
-                             gobject.TYPE_INT)),
+        'transfer-progress': (GObject.SIGNAL_RUN_FIRST,
+                             GObject.TYPE_NONE,
+                             (GObject.TYPE_INT,
+                             GObject.TYPE_INT)),
 
-        'transfer-started': (gobject.SIGNAL_RUN_FIRST,
-                             gobject.TYPE_NONE,
+        'transfer-started': (GObject.SIGNAL_RUN_FIRST,
+                             GObject.TYPE_NONE,
                              ()),
 
-        'transfer-finished': (gobject.SIGNAL_RUN_FIRST,
-                              gobject.TYPE_NONE,
+        'transfer-finished': (GObject.SIGNAL_RUN_FIRST,
+                              GObject.TYPE_NONE,
                               ()),
         }
 
     def __init__(self):
-        gobject.GObject.__init__(self)
+        GObject.GObject.__init__(self)
 
     def get_queue(self, printer, remote_host, username, password):
 	"""
@@ -53,6 +59,8 @@ class Backend(gobject.GObject):
                            password = password)
         except:
             raise RuntimeError('Impossibile connettersi a %s' % remote_host)
+
+	logging.info("Executing lpq -h %s -P%s" % (host, printer))
 
         stdin, stdout, stderr = client.exec_command("lpq -h %s -P%s" % (host, printer))
         output = stdout.read()
@@ -87,7 +95,7 @@ class Backend(gobject.GObject):
         self.__abort_transfer = True
 
     def split_name(self, printer):
-        host = "lasker.dm.unipi.it"
+        host = "printserver.dm.unipi.it"
         if "@" in printer:
             pos = printer.index("@")
             host = printer[pos+1:]
@@ -124,7 +132,7 @@ class Backend(gobject.GObject):
         sftp = paramiko.SFTPClient.from_transport(t)
         
         # Questo è inevitabile.. :)
-        cmd = "lpr -P%s " % printer
+        cmd = "lpr -P%s -o position=center -o media=A4" % printer
 
         # Numero di pagine
         try:
@@ -182,6 +190,7 @@ class Backend(gobject.GObject):
         chan = t.open_session()
 
         # Diamo il comando sul canale
+        logging.info("Executing %s" % cmd)
         chan.exec_command(cmd)
         exit_status = chan.recv_exit_status()
 

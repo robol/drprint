@@ -5,6 +5,7 @@ Name=DrPrint
 Comment[it]=Stampa sulle stampanti della rete dm.unipi.it
 Comment[en]=Print using dm.unipi.it network printers
 Exec=drprint
+MimeType=application/pdf;application/postscript;text/plain
 Terminal=false
 Type=Application
 StartupNotify=false

@@ -1,10 +1,10 @@
-import gtk, pygtk, gobject
+from gi.repository import Gtk, GObject
 
-class Dialog(gtk.MessageDialog):
+class Dialog(Gtk.MessageDialog):
     
-    def __init__(self, buttons=gtk.BUTTONS_NONE, mtype=gtk.MESSAGE_INFO):
+    def __init__(self, buttons=Gtk.ButtonsType.NONE, mtype=Gtk.MessageType.INFO):
 
-        gtk.MessageDialog.__init__(self,
+        Gtk.MessageDialog.__init__(self,
                                    parent = None,
                                    flags = 0,
                                    type = mtype,
@@ -16,8 +16,8 @@ class ErrorDialog(Dialog):
     def __init__(self, error, message):
         
         Dialog.__init__(self, 
-                        buttons = gtk.BUTTONS_OK,
-                        mtype = gtk.MESSAGE_ERROR
+                        buttons = Gtk.ButtonsType.OK,
+                        mtype = Gtk.MessageType.ERROR
                         )
 
         self.set_markup(error)
@@ -28,8 +28,8 @@ class QueueDialog(Dialog):
     def __init__(self, jobs, printer):
 
         Dialog.__init__(self,
-                        buttons = gtk.BUTTONS_OK,
-                        mtype = gtk.MESSAGE_INFO
+                        buttons = Gtk.ButtonsType.OK,
+                        mtype = Gtk.MessageType.INFO
                         )
 
         if len(jobs) == 0:
@@ -50,8 +50,8 @@ class InfoDialog(Dialog):
     def __init__(self, error, message):
         
         Dialog.__init__(self, 
-                        buttons = gtk.BUTTONS_OK,
-                        mtype = gtk.MESSAGE_INFO
+                        buttons = Gtk.ButtonsType.OK,
+                        mtype = Gtk.MessageType.INFO
                         )
 
         self.set_markup(error)
@@ -64,27 +64,27 @@ class MessageDialog(Dialog):
     def __init__(self, title, text):
         
         Dialog.__init__(self,
-                        buttons = gtk.BUTTONS_OK_CANCEL,
-                        mtype = gtk.MESSAGE_WARNING
+                        buttons = Gtk.ButtonsType.OK_CANCEL,
+                        mtype = Gtk.MessageType.WARNING
                         )
         
         self.set_markup(title)
         self.format_secondary_markup(text)
 
     
-class ProgressDialog(gtk.Dialog):
+class ProgressDialog(Gtk.Dialog):
 
     __gsignals__ = {
-        'transfer-cancelled': (gobject.SIGNAL_RUN_LAST,
-                               gobject.TYPE_NONE, ())
+        'transfer-cancelled': (GObject.SIGNAL_RUN_LAST,
+                               GObject.TYPE_NONE, ())
         }
 
     def __init__(self, filename):
 
-        gtk.Dialog.__init__(self, 
+        Gtk.Dialog.__init__(self, 
                             title = "Trasferimento file in corso...",
                             buttons = None)
-        self.__progress_bar = gtk.ProgressBar()
+        self.__progress_bar = Gtk.ProgressBar()
         self.__progress_bar.set_fraction(0)
         self.set_border_width(5)
 
@@ -92,14 +92,14 @@ class ProgressDialog(gtk.Dialog):
         
         filename = filename.split("/")[-1]
         text = "Trasferimento del file %s \n sul server remoto in corso..." % filename
-        label = gtk.Label(text)
-        self.get_content_area().pack_start(label, 5)
-        self.get_content_area().pack_start(self.__progress_bar, 5)
+        label = Gtk.Label(text)
+        self.get_content_area().pack_start(label, True, True, 5)
+        self.get_content_area().pack_start(self.__progress_bar, True, True, 5)
         label.show()
         self.__progress_bar.show()
 
-        cancel_button = gtk.Button("Annulla")
-        self.get_content_area().pack_start(cancel_button, 5)
+        cancel_button = Gtk.Button("Annulla")
+        self.get_content_area().pack_start(cancel_button, True, True, 5)
         cancel_button.show()
 
         cancel_button.connect("clicked", self.cancel)
@@ -112,8 +112,8 @@ class ProgressDialog(gtk.Dialog):
 
     def set_fraction(self, fraction):
         self.__progress_bar.set_fraction(fraction)
-        while gtk.events_pending():
-            gtk.main_iteration()
+        while Gtk.events_pending():
+            Gtk.main_iteration()
 
     
         
