@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
+import os, sys
 from gi.repository import Gtk
 from optparse import OptionParser
 from DrPrintGui.MainWin import MainWin
@@ -15,8 +15,16 @@ if __name__ == "__main__":
    parser.add_option("-u", "--user", dest="user",default=None,
                      help = "set username to use for the ssh connection",
                      metavar="user")
+
+   parser.add_option("-v", "--version", dest = "version", default = False,
+                     help = "Show DrPrint version and exit", 
+                     action = "store_true")
    
    (option, args) = parser.parse_args()
+
+   if option.version:
+      print("DrPrint 2.0")
+      sys.exit(0)
 
    if len(args) > 0:
       filename = args[0]

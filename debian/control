@@ -1,14 +1,19 @@
 Source: drprint
-Section: unknown
+Section: misc
 Priority: extra
 Maintainer: Leonardo Robol <leo@robol.it>
-Build-Depends: debhelper (>= 7)
-Standards-Version: 3.8.1
+Build-Depends: debhelper (>= 8.0.0), python-dev
+Standards-Version: 3.9.5
 Homepage: http://poisson.phc.unipi.it/~robol/
 
 Package: drprint
 Architecture: all
-Depends: python-paramiko, python-gtk2, python-gobject
+Depends: ${misc:Depends},
+    python (>= 2.4), 
+    python-paramiko, 
+    python-gtk2, 
+    python-gobject, 
+    python-support (>= 0.90)
 Description: Interfaccia GTK per stampare sulle stampanti di dm.unipi.it
  Interfaccia GTK che permette di mandare in stampa file
  ps e pdf sulle stampanti del dipartimento di matematica
