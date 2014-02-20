@@ -11,9 +11,9 @@ from gi.repository import Gtk
 import os
 import sys
 
-from Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, \
+from .Input import AuthBlock, PrinterSettingsBlock, PrintButton, LeftAlignedLabel, \
      PageRangeBlock, OrientationSelect, SidesSelect, QueueButton
-from Dialogs import ErrorDialog, MessageDialog, InfoDialog, QueueDialog, ProgressDialog
+from .Dialogs import ErrorDialog, MessageDialog, InfoDialog, QueueDialog, ProgressDialog
 from DrPrintBackend import PrintingError
 
 class MainWin(Gtk.Window):
@@ -159,7 +159,7 @@ class MainWin(Gtk.Window):
         remote_host = self.auth_block.get_remote_host()
         try:
             jobs = self.backend.get_queue(printer, remote_host, username, password)
-        except RuntimeError, e:
+        except (RuntimeError, e):
             dialog = ErrorDialog("<b>Errore di connessione</b>",
                                  "Il seguente errore si è verificato durante il recupero della coda: %s" % e)
             resp = dialog.run()
@@ -170,11 +170,9 @@ class MainWin(Gtk.Window):
         # altrimenti no.
         self.queue_button.set_state("idle")
         if jobs is not None:
-	  qd = QueueDialog(jobs, printer)
-	  resp = qd.run()
-	  qd.destroy()
-        
-        
+            qd = QueueDialog(jobs, printer)
+            resp = qd.run()
+            qd.destroy()                
 
     def print_button_clicked_callback(self, widget):
         if not self.backend == None:
@@ -235,7 +233,7 @@ Se vuoi continuare premi OK")
                                             orientation=orientation,
                                             sides = sides,
                                             remote_host = remote_host)
-                except PrintingError, e:
+                except (PrintingError, e):
                     # Comunichiamo il fallimento
                     dialog = ErrorDialog("<b>Errore di stampa</b>",
                                          "Il seguente errore si è verificato durante la stampa: %s." % e)
@@ -258,7 +256,7 @@ Se vuoi continuare premi OK")
            
 
     def debug(self, text):
-        print text
+        print (text)
         
 
         

@@ -9,9 +9,8 @@ class LeftAlignedLabel(Gtk.Alignment):
     def __init__(self, markup, left_padding=0):
         
         Gtk.Alignment.__init__(self)
-
-	self.set_halign(0)
-	self.set_valign(0.5)
+        self.set_halign(0)
+        self.set_valign(0.5)
         
         label = Gtk.Label()
         label.set_markup(markup)
@@ -193,7 +192,7 @@ file .ps da selezionare qui")
 
     def SelectFile(self, window):
 
-	filename = self.Filename.get_text()
+        filename = self.Filename.get_text()
         
         chooser = Gtk.FileChooserDialog(
             title = "Seleziona file da stampare",
@@ -202,10 +201,8 @@ file .ps da selezionare qui")
             buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK) )
         if chooser.run() == Gtk.ResponseType.OK:
             self.Filename.set_text(chooser.get_filename())
-
-
-	if filename != "":
-		chooser.set_filename(filename)
+            if filename != "":
+                chooser.set_filename(filename)
         
         chooser.destroy()
 

@@ -39,18 +39,18 @@ class Backend(GObject.GObject):
         GObject.GObject.__init__(self)
 
     def get_queue(self, printer, remote_host, username, password):
-	"""
-	Obtain the queue of jobs on selected printer. It opens an SSH
-	connection to the server and parse lpq -Pprinter output
-	"""
+        """
+        Obtain the queue of jobs on selected printer. It opens an SSH
+        connection to the server and parse lpq -Pprinter output
+        """
 
         host, printer = self.split_name(printer)
 
-	try:
+        try:
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         except:
-           raise RuntimeError('Impossibile inizializzare paramiko')
+            raise RuntimeError('Impossibile inizializzare paramiko')
         
         try:
             client.connect(remote_host,
@@ -60,7 +60,7 @@ class Backend(GObject.GObject):
         except:
             raise RuntimeError('Impossibile connettersi a %s' % remote_host)
 
-	logging.info("Executing lpq -h %s -P%s" % (host, printer))
+        logging.info("Executing lpq -h %s -P%s" % (host, printer))
 
         stdin, stdout, stderr = client.exec_command("lpq -h %s -P%s" % (host, printer))
         output = stdout.read()
@@ -123,9 +123,9 @@ class Backend(GObject.GObject):
                            port=22, 
                            username=username,
                            password=password)
-        except paramiko.AuthenticationException, e:
+        except (paramiko.AuthenticationException, e):
             raise PrintingError('Autenticazione fallita')
-        except Exception, e:
+        except (Exception, e):
             raise PrintingError('Connessione fallita (%s)' % e)
         
         t = client.get_transport()
