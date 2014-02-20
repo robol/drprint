@@ -25,7 +25,7 @@ class MainWin(Gtk.Window):
         self.user = user
         self.filename = filename
         
-        Gtk.Window.__init__(self, Gtk.WindowType.TOPLEVEL)
+        Gtk.Window.__init__ (self, type = Gtk.WindowType.TOPLEVEL)
         self.set_title("DrPrint")
 
         self.set_title = "DrPrint 1.0-rc1"
@@ -129,7 +129,7 @@ class MainWin(Gtk.Window):
         self.sides_select.show()
 
         # Bottoni finali, omogenei :)
-        hbox = Gtk.HBox(True)
+        hbox = Gtk.HBox(homogeneous = True)
         
         self.queue_button = QueueButton()
         hbox.pack_start(self.queue_button, True, True, 0)

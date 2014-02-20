@@ -24,7 +24,8 @@ class PaddingLeftWidget(Gtk.Table):
     
     def __init__(self, widget, padding_left):
         
-        Gtk.Table.__init__(self, 1, 2, False)
+        Gtk.Table.__init__(self, n_rows = 1, 
+                           n_columns = 2, homogeneous = False)
         label = Gtk.Label()
         self.set_col_spacing(0, padding_left)
         self.attach(label, 0,1,0,1, False, False)
@@ -81,8 +82,10 @@ class AuthBlock(Gtk.HBox):
         self.user_field = UsernameField(user = user)
         self.password_field = PasswordField()
         
-        vbox1 = Gtk.VBox(False, default_spacing)
-        vbox2 = Gtk.VBox(False, default_spacing)
+        vbox1 = Gtk.VBox(homogeneous = False, 
+                         spacing = default_spacing)
+        vbox2 = Gtk.VBox(homogeneous = False, 
+                         spacing = default_spacing)
 
         label = LeftAlignedLabel("Server SSH", 20)
         vbox1.pack_start (label, True, True, 0)
@@ -135,7 +138,7 @@ class PrintButton(Gtk.Button):
     
     def __init__(self, parent=None):
         
-        Gtk.Button.__init__(self, "Stampa")
+        Gtk.Button.__init__(self, label = "Stampa")
 
     def set_state(self, state):
         if state is "idle":
@@ -152,7 +155,7 @@ class PrintButton(Gtk.Button):
 class QueueButton(Gtk.Button):
 
     def __init__(self):
-        Gtk.Button.__init__(self, "Visualizza coda")
+        Gtk.Button.__init__(self, label = "Visualizza coda")
         
     def set_state(self, state):
         if state is "idle":
@@ -175,7 +178,7 @@ class SelectFileWidget(Gtk.HBox):
         if filename is not None:
             self.Filename.set_text(filename)
             
-        self.Browser = Gtk.Button("Sfoglia")
+        self.Browser = Gtk.Button(label = "Sfoglia")
 
         self.Filename.set_tooltip_text("Se hai bisogno di stampare \
 da un programma clicca File -> Stampa -> Stampa su file e crea un \
@@ -251,8 +254,10 @@ class PrinterSettingsBlock(Gtk.HBox):
          
         Gtk.HBox.__init__(self)
         
-        vbox1 = Gtk.VBox(False, default_spacing)
-        vbox2 = Gtk.VBox(False, default_spacing)
+        vbox1 = Gtk.VBox(homogeneous = False, 
+                         spacing = default_spacing)
+        vbox2 = Gtk.VBox(homogeneous = False, 
+                         spacing = default_spacing)
 
         self.set_spacing(default_spacing)
 
