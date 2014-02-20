@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup (name='drprint',
-       version='2.0',
+       version='2.1',
        author='Leonardo Robol',
        author_email='leo@robol.it',
        url='http://www.robol.it/~leonardo/',

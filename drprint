@@ -23,7 +23,7 @@ if __name__ == "__main__":
    (option, args) = parser.parse_args()
 
    if option.version:
-      print("DrPrint 2.0")
+      print("DrPrint 2.1")
       sys.exit(0)
 
    if len(args) > 0:
